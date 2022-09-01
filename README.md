@@ -1,12 +1,37 @@
 # CS530-Parallel-Computing
 
+## System Requirements
+
+  * A C compiler, this repo targets gcc
+  * cmake
+    * https://cmake.org/install/
+    * On mac, this can be installed with `brew install cmake`
+  * make
+
 ## Build and Run Instructions
 
 This project is currently set to be built using cmake.
-From the top level project directory, run the following command to build the project.
-`cmake --build cmake-build-debug --target CS530_Parallel_Computing`
 
-This will output an executable file named `CS530_Parallel_Computing` into the CMakeFiles directory that can then be run from the command line
+To build the project, first create a build directory, on *nix
+
+`mkdir build`
+
+Next, enter the newly created directory 
+
+`cd build`
+
+From the build directory, run cmake and pass the top level directory as the argument
+
+`cmake ..`
+
+Next, run make from inside the build directory
+
+`make`
+
+This will output an executable file named `CS530_Parallel_Computing` into the build directory that can then be run 
+from the command line, for example
+
+`./CS530_Parallel_Computing`
 
 
 ## Editor Config
