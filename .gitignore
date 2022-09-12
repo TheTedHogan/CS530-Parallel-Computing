@@ -58,7 +58,7 @@ cmake-build-debug/
 # IDE/Local Environment Files
 .idea/
 *.iml
-
+.vscode/
 # Annoying Mac Files
 .DS_Store
 

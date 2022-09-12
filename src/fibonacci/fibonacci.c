@@ -1,22 +1,25 @@
 #include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+#include <ctype.h>
 
-int getFibonacciNumer(int n)
+int getFibonacciNumber(int n)
 {
   if (n == 1 || n == 2)
   {
     return 1;
   }
 
-  return fibonacci(n-2) + fibonacci(n-1);
+  return getFibonacciNumber(n-2) + getFibonacciNumber(n-1);
 }
 
 int* getFibonacciSequence(int n)
 {
-  int fibArray[n];
+  int* fibArray = malloc(n);
 
   for (int i = 1; i <= n; i++)
   {
-    fibArray[i - 1] = getFibonacciNumer(i);
+    fibArray[i - 1] = getFibonacciNumber(i);
   }
 
   return fibArray;
@@ -26,26 +29,25 @@ int main(int argc, char *argv[])
 {
   if (argc > 2)
   {
-    printf("Too many arguments supplied");
+    printf("Too many arguments supplied\n");
   }
 
   if (argc == 3 && strcmp(argv[1], "s") == 0)
   {
-    int nthTerm = argv[2];
+    int nthTerm = atoi(argv[2]);
     int* sequence = getFibonacciSequence(nthTerm);
 
     for (int i = 0; i < nthTerm; i++)
     {
       printf("%d ", sequence[i]);
     }
-
     printf("\n");
-
+    free(sequence);
   }
   else if (argc == 2 && isdigit(argv[1]))
   {
-    int nthTerm = argv[1];
-    printf("%d", getFibonacciNumer(nthTerm));
+    int nthTerm = atoi(argv[1]);
+    printf("%d", getFibonacciNumber(nthTerm));
   }
   else
   {
