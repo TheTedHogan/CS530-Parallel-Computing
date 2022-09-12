@@ -15,7 +15,7 @@ int getFibonacciNumber(int n)
 
 int* getFibonacciSequence(int n)
 {
-  int* fibArray = malloc(n);
+  int* fibArray = malloc(sizeof(int) * n);
 
   for (int i = 1; i <= n; i++)
   {
@@ -30,6 +30,12 @@ int main(int argc, char *argv[])
   if (argc > 3)
   {
     printf("Too many arguments supplied\n");
+  }
+
+  if (!isdigit(*argv[1]))
+  {
+    fprintf(stderr, "First argument must be an integer\n");
+    exit(1);
   }
 
   if (argc == 3 && strcmp(argv[2], "s") == 0)
