@@ -56,7 +56,7 @@ int main(int argc, char *argv[])
   }
   else
   {
-    printf("Usage instructions:\nThe program can be run in the following ways\n./fibonnaci s <some_number> will print the sequence of fibonacci numbers including the term that is requested\n./fibonacci <some_number> will print for you the nth number in the fibonacci sequence\n");
+    printf("Usage instructions:\nThe program can be run in the following ways\n./fibonnaci <some_number> s will print the sequence of fibonacci numbers including the term that is requested\n./fibonacci <some_number> will print for you the nth number in the fibonacci sequence\n");
   }
 
   return 0;
