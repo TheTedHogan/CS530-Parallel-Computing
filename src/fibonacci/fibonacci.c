@@ -27,14 +27,14 @@ int* getFibonacciSequence(int n)
 
 int main(int argc, char *argv[])
 {
-  if (argc > 2)
+  if (argc > 3)
   {
     printf("Too many arguments supplied\n");
   }
 
-  if (argc == 3 && strcmp(argv[1], "s") == 0)
+  if (argc == 3 && strcmp(argv[2], "s") == 0)
   {
-    int nthTerm = atoi(argv[2]);
+    int nthTerm = atoi(argv[1]);
     int* sequence = getFibonacciSequence(nthTerm);
 
     for (int i = 0; i < nthTerm; i++)
@@ -42,12 +42,11 @@ int main(int argc, char *argv[])
       printf("%d ", sequence[i]);
     }
     printf("\n");
-    free(sequence);
   }
-  else if (argc == 2 && isdigit(argv[1]))
+  else if (argc == 2 && isdigit(*argv[1]))
   {
     int nthTerm = atoi(argv[1]);
-    printf("%d", getFibonacciNumber(nthTerm));
+    printf("%d\n", getFibonacciNumber(nthTerm));
   }
   else
   {
