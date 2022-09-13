@@ -6,7 +6,7 @@
 
 int main(void){
     
-    if(system("./myprog -1\n") == 1){
+    if(system("./myprog -1\n") == 0){
         printf("Input is -1\n");
         printf("FAILED: didn't catch negative value!\n");
     }
@@ -15,7 +15,7 @@ int main(void){
         printf("SUCCESS: caught negative value!\n");
     }
 
-    if(system("./myprog -0.1\n") == 1){
+    if(system("./myprog -0.1\n") == 0){
         printf("Input is -0.1\n");
         printf("FAILED: didn't catch negative decimal value!\n");
     }
@@ -24,7 +24,7 @@ int main(void){
         printf("SUCCESS: caught negative decimal value!\n");
     }
 
-    if(system("./myprog 0\n") == 1){
+    if(system("./myprog 0\n") == 0){
         printf("Input is 0\n");
         printf("FAILED: didn't catch 0 value!\n");
     }
@@ -33,7 +33,7 @@ int main(void){
         printf("SUCCESS: caught 0 value!\n");
     }
 
-    if(system("./myprog 0.1\n") == 1){
+    if(system("./myprog 0.1\n") == 0){
         printf("Input is 0.1\n");
         printf("FAILED: didn't catch decimal value!\n");
     }
@@ -42,7 +42,7 @@ int main(void){
         printf("SUCCESS: caught decimal value!\n");
     }
 
-    if(system("./myprog 10.1\n") == 1){
+    if(system("./myprog 10.1\n") == 0){
         printf("Input is 0.1\n");
         printf("FAILED: didn't catch float value!\n");
     }
@@ -51,7 +51,7 @@ int main(void){
         printf("SUCCESS: caught float value!\n");
     }
 
-    if(system("./myprog\n") == 1){
+    if(system("./myprog\n") == 0){
         printf("Input is NULL\n");
         printf("FAILED: didn't catch NULL value!\n");
     }
