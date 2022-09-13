@@ -2,9 +2,21 @@
 #include <string.h>
 #include <stdlib.h>
 #include <ctype.h>
+#include <math.h>
 
 int getFibonacciNumber(int n)
 {
+  if ((double) ceilf(n) / (double) floorf(n) != 1)
+  {
+    printf("Input must be an integer\n");
+    exit(1);
+  }
+
+  if(n < 1)
+  {
+    exit(1);
+  }
+
   if (n == 1 || n == 2)
   {
     return 1;
@@ -27,9 +39,10 @@ int* getFibonacciSequence(int n)
 
 int main(int argc, char *argv[])
 {
-  if (argc > 3)
+  if (argc > 3 || argc < 2)
   {
-    printf("Too many arguments supplied\n");
+    printf("Usage instructions:\nThe program can be run in the following ways\n./fibonnaci <some_number> s will print the sequence of fibonacci numbers including the term that is requested\n./fibonacci <some_number> will print for you the nth number in the fibonacci sequence\n");
+    exit(1);
   }
 
   if (!isdigit(*argv[1]))
@@ -57,6 +70,7 @@ int main(int argc, char *argv[])
   else
   {
     printf("Usage instructions:\nThe program can be run in the following ways\n./fibonnaci <some_number> s will print the sequence of fibonacci numbers including the term that is requested\n./fibonacci <some_number> will print for you the nth number in the fibonacci sequence\n");
+    exit(1);
   }
 
   return 0;
