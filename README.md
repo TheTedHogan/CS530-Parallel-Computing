@@ -41,3 +41,10 @@ Different IDE's/TextEditor's may require the installation of an extension in ord
 
 - ### VSCode Instructions
     - Install [this extension](https://marketplace.visualstudio.com/items?itemName=EditorConfig.EditorConfig) inside VSCode and reload the project
+
+## Decisions for Leibniz series
+    - The Leibniz series is fairly simple as the only input needed it the `#` of iterations desired. running `./leibniz_series #` where `#` is a positive integer will provide and approximation of pie. The larger the `#` the better the approximation to further decimal levels.
+
+
+## Decisions for the Monte Carlo
+    - The Monte Carlo approximations is fairly simple as the only input needed is the `#` of iterations desired. running `./monte_carlo #` where `#` is a positive integer will provide and approximation of pie. The larger the `#` the better the approximation to further decimal levels.
