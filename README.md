@@ -41,10 +41,15 @@ Different IDE's/TextEditor's may require the installation of an extension in ord
 
 - ### VSCode Instructions
     - Install [this extension](https://marketplace.visualstudio.com/items?itemName=EditorConfig.EditorConfig) inside VSCode and reload the project
-
+    
 ## Decisions for Leibniz series
     - The Leibniz series is fairly simple as the only input needed it the `#` of iterations desired. running `./leibniz_series #` where `#` is a positive integer will provide and approximation of pie. The larger the `#` the better the approximation to further decimal levels.
 
 
 ## Decisions for the Monte Carlo
     - The Monte Carlo approximations is fairly simple as the only input needed is the `#` of iterations desired. running `./monte_carlo #` where `#` is a positive integer will provide and approximation of pie. The larger the `#` the better the approximation to further decimal levels.
+
+## Decisions Made For Fibonacci
+- Decided to make this a recursive function as opposed to a for-loop style funciton, this made the code much simpler and captures more accurately the essence of the fibonacci sequence
+- Decided to allow for two different types of output. The first type of output simply returns an integer which is the n-th value in the sequence. The value for `n` is provided by the user in an argument eg. `./fibonacci 4`. The second type of out put prints out the entire sequence up to the n-th value in the fibonacci sequence. The user can denote they want the entire sequence by appending the argument `s` at the end of the command eg. `./fibonacci 4 s`
+
