@@ -3,6 +3,7 @@ project(CS530_Parallel_Computing C)
 
 
 set(CMAKE_C_STANDARD 99)
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fopenmp")
 include_directories("${CMAKE_SOURCE_DIR}/include" "${CMAKE_SOURCE_DIR}/libs" "${CMAKE_SOURCE_DIR}/etc" "{CMAKE_SOURCE_DIR}/src")
 
 add_executable(matrixvector src/MatrixVector/matrixvector.c include/mmio.h libs/mmio.c src/MatrixVector/matrixoperations.c src/MatrixVector/matrixoperations.h)
