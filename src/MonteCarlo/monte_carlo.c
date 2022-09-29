@@ -22,7 +22,7 @@ int main(int argc, char * argv[]){
     float check;
     float pi = 0;
     double x = 0;  // x value of a particular coordinate.
-    double y = 0;  // x value of a particular coordinate.
+    double y = 0;  // y value of a particular coordinate.
     double r = 0;  // distance to the origin.
     double rand_max = (double) RAND_MAX;
     int inside = 0; // count for the number of point with r less than 1.
