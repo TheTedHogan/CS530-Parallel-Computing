@@ -4,6 +4,7 @@
 #include <ctype.h>
 #include <math.h>
 #include <stdint.h>
+#include <omp.h>
 
 double getFibonacciNumber(int n)
 {
@@ -11,20 +12,12 @@ double getFibonacciNumber(int n)
   double nume_1,nume_2,deno,num;
   //long long int num; 
   //uint64_t num;
-  
-  #pragma omp sections
-  {
-    #pragma omp section
-      nume_1 = pow(((double)1+sqrt(5)),n);
-    
-    #pragma omp section
-      nume_2 = pow(((double)1-sqrt(5)),n);
 
-    #pragma omp section
-      deno = (pow((double)2,n)*sqrt(5));
-  }
+  nume_1 = pow(((double)1+sqrt(5)),n);
+  nume_2 = pow(((double)1-sqrt(5)),n);
+  deno = (pow((double)2,n)*sqrt(5));
+
   //printf("nume_1 is : %lf\nnume_2 is: %lf\ndeno is: %lf\n", nume_1,nume_2,deno);
-  #pragma omp parallel
   num = (nume_1-nume_2)/deno;
   //printf("num is %lf\n",num);
 
@@ -36,10 +29,12 @@ double* getFibonacciSequence(int n)
 {
   double* fibArray = malloc(sizeof(double) * n);
 
-  for (int i = 0; i <= n; i++)
-  {
-    fibArray[i] = getFibonacciNumber(i);
-  }
+  #pragma omp parallel for default(none) shared(fibArray, n)
+    for (int i = 0; i <= n; i++)
+    {
+      //printf("Thread Num: %d\n", omp_get_thread_num());
+      fibArray[i] = getFibonacciNumber(i);
+    }
 
   return fibArray;
 }
@@ -63,11 +58,12 @@ int main(int argc, char *argv[])
     int nthTerm = atoi(argv[1]);
     double* sequence = getFibonacciSequence(nthTerm);
 
-    for (int i = 0; i < nthTerm; i++)
+    for (int i = 0; i <= nthTerm; i++)
     {
       printf("%.0f,", sequence[i]);
     }
     printf("\n");
+    free(sequence);
   }
   else if (argc == 2 && isdigit(*argv[1]))
   {
