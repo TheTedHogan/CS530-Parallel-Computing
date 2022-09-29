@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
+#include <omp.h>
 
 void validInput(int input_1, float input_2){
     if(input_1 < 1){
@@ -34,6 +35,7 @@ int main(int argc, char * argv[]){
     
 
     int i;
+    #pragma omp parallel for default(none) shared(n) reduction(+:pi)
     for(i = 0; i < n; ++i){
         pi += (pow(-1,i))/(2*i+1);
     }
