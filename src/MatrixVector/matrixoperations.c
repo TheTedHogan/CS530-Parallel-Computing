@@ -26,12 +26,22 @@ int matrix_vector_multiply(int matrix_dimensions[], int vector_dimensions[], dou
 
     gettimeofday(&startTime, 0);
 
-    #pragma omp parallel shared(output_matrix) private(i, j) num_threads(90)
-    {
-      #pragma omp for schedule(static)
-      for(i = 0; i < matrix_dimensions[0]; i++){
-          output_matrix[i] = 0;
+    #pragma omp parallel default(none) shared(matrix_dimensions, vector_dimensions, matrix, vector, output_matrix) private(i, j)
+        {
+    #pragma omp for schedule(static)
+            for(i = 0; i < matrix_dimensions[0]; i++){
+                output_matrix[i] = 0;
 
+                for(j = 0; j < vector_dimensions[0]; j++){
+                    output_matrix[i] = 0;
+                }
+            }
+        }
+
+    #pragma omp parallel default(none) shared(matrix_dimensions, vector_dimensions, matrix, vector, output_matrix) private(i, j)
+    {
+      #pragma omp for schedule(static) collapse(2)
+      for(i = 0; i < matrix_dimensions[0]; i++){
           for(j = 0; j < vector_dimensions[0]; j++){
               output_matrix[i] += (matrix[coord_to_index(i, j, matrix_dimensions[1])] * vector[j]);
           }
@@ -39,7 +49,7 @@ int matrix_vector_multiply(int matrix_dimensions[], int vector_dimensions[], dou
     }
 
     gettimeofday(&endTime, 0);
-    double timeElapsed = (endTime.tv_sec - startTime.tv_sec) * 1.0f + (endTime.tv_usec = startTime.tv_usec) / 1000000.0f;
+    double timeElapsed = (endTime.tv_sec - startTime.tv_sec) * 1.0f + (endTime.tv_usec - startTime.tv_usec) / 1000000.0f;
     printf("Time elapsed for matrix multiplications is %0.2f seconds\n", timeElapsed);
 
     return(0);

@@ -22,15 +22,25 @@ int matrix_matrix_multiply(int matrix_dimensions_a[], int matrix_dimensions_b[],
 
     gettimeofday(&startTime, 0);
 
-    #pragma omp parallel shared(output_matrix) private(i, j, k) num_threads(90)
+    #pragma omp parallel default(none) shared(matrix_dimensions_a, matrix_dimensions_b, matrix_a, matrix_b, output_matrix) private(i, j, k)
     {
-      #pragma omp for schedule(static)
+        #pragma omp for schedule(static) collapse(3)
+        for(i = 0; i < matrix_dimensions_a[0]; i++){
+            for(j = 0; j < matrix_dimensions_b[1]; j++){
+                for(k = 0; k < matrix_dimensions_b[0]; k++){
+                    output_matrix[coord_to_index(i, j, matrix_dimensions_b[1])] = 0;
+                }
+            }
+        }
+    }
+
+    #pragma omp parallel default(none) shared(matrix_dimensions_a, matrix_dimensions_b, matrix_a, matrix_b, output_matrix) private(i, j, k)
+    {
+      #pragma omp for schedule(static) collapse(3)
       for(i = 0; i < matrix_dimensions_a[0]; i++){
           for(j = 0; j < matrix_dimensions_b[1]; j++){
-              int result_index = coord_to_index(i, j, matrix_dimensions_b[1]);
-              output_matrix[result_index] = 0;
-              for(k = 0; k < matrix_dimensions_b[0]; k++){
-                  output_matrix[result_index] += matrix_a[coord_to_index(i, k, matrix_dimensions_a[1])] * matrix_b[coord_to_index(k, j, matrix_dimensions_b[1])];
+             for(k = 0; k < matrix_dimensions_b[0]; k++){
+                  output_matrix[coord_to_index(i, j, matrix_dimensions_b[1])] += matrix_a[coord_to_index(i, k, matrix_dimensions_a[1])] * matrix_b[coord_to_index(k, j, matrix_dimensions_b[1])];
               }
           }
       }
@@ -38,7 +48,7 @@ int matrix_matrix_multiply(int matrix_dimensions_a[], int matrix_dimensions_b[],
 
     gettimeofday(&endTime, 0);
 
-    double timeElapsed = (endTime.tv_sec - startTime.tv_sec) * 1.0f + (endTime.tv_usec = startTime.tv_usec) / 1000000.0f;
+    double timeElapsed = (endTime.tv_sec - startTime.tv_sec) * 1.0f + (endTime.tv_usec - startTime.tv_usec) / 1000000.0f;
     printf("Time elapsed for matrix multiplications is %0.2f seconds\n", timeElapsed);
 
     return(0);
