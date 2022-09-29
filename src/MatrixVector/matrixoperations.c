@@ -2,11 +2,17 @@
 #include <stdlib.h>
 #include <mmio.h>
 #include "matrixoperations.h"
+#include <omp.h>
+#include <sys/time.h>
 
 int coord_to_index(int row_coord, int col_coord, int columns){
     return (row_coord * columns) + col_coord;
 }
 int matrix_vector_multiply(int matrix_dimensions[], int vector_dimensions[], double matrix[], double vector[], double *output_matrix){
+    int i, j;
+    struct timeval startTime, endTime;
+
+
     if(matrix_dimensions[1] != vector_dimensions[0]){
         printf("Matrix and vector are incompatible shapes to multiply\n");
         printf("Matrix has %d columns\n", matrix_dimensions[1]);
@@ -17,13 +23,25 @@ int matrix_vector_multiply(int matrix_dimensions[], int vector_dimensions[], dou
         printf("Vector argument is not a properly formatted vector\v");
         return 1;
     }
-    for(int i = 0; i < matrix_dimensions[0]; i++){
-        output_matrix[i] = 0;
 
-        for(int j = 0; j < vector_dimensions[0]; j++){
-            output_matrix[i] += (matrix[coord_to_index(i, j, matrix_dimensions[1])] * vector[j]);
-        }
+    gettimeofday(&startTime, 0);
+
+    #pragma omp parallel shared(output_matrix) private(i, j) num_threads(90)
+    {
+      #pragma omp for schedule(static)
+      for(i = 0; i < matrix_dimensions[0]; i++){
+          output_matrix[i] = 0;
+
+          for(j = 0; j < vector_dimensions[0]; j++){
+              output_matrix[i] += (matrix[coord_to_index(i, j, matrix_dimensions[1])] * vector[j]);
+          }
+      }
     }
+
+    gettimeofday(&endTime, 0);
+    double timeElapsed = (endTime.tv_sec - startTime.tv_sec) * 1.0f + (endTime.tv_usec = startTime.tv_usec) / 1000000.0f;
+    printf("Time elapsed for matrix multiplications is %0.2f seconds\n", timeElapsed);
+
     return(0);
 }
 

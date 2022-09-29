@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <mmio.h>
 #include "matrixoperations.h"
-
+#include <omp.h>
 
 int main(int argc, char *argv[]) {
 
@@ -55,15 +55,13 @@ int main(int argc, char *argv[]) {
 
     matrix_matrix_multiply(matrix_dimensions_a, matrix_dimensions_b, matrix_a, matrix_b, output_matrix);
 
-    /* uncomment to print out resut matrix to stdout
-     * most results will be too big to be feasibly understood on std out, so this was not made a cli option
-    for(int i=0; i < matrix_dimensions_a[0]; i ++){
-        for (int j = 0; j < matrix_dimensions_b[1]; j++){
-            printf("%g\t", output_matrix[coord_to_index(i, j, matrix_dimensions_b[1])]);
-        }
-        printf("\n");
-    }
-    */
+    // for(int i=0; i < matrix_dimensions_a[0]; i ++){
+    //     for (int j = 0; j < matrix_dimensions_b[1]; j++){
+    //         printf("%g\t", output_matrix[coord_to_index(i, j, matrix_dimensions_b[1])]);
+    //     }
+    //     printf("\n");
+    // }
+
     int output_dimensions[3] = {matrix_dimensions_a[0], matrix_dimensions_b[1], matrix_dimensions_a[0] * matrix_dimensions_b[1] };
 
     //Open file to write out
