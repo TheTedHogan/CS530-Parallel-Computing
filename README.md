@@ -34,10 +34,16 @@ from the command line, for example
 `./fibonacci 10 s`
 
 ### Running Fibonacci
-
+There are two fibonacci programs. The first is a serial program that implements a recursive algorithm to calculate the sequence
 The fibonacci program takes one mandatory and one optional argument. The first argument required is the number in the fibonacci you would like to the display the result for. The second argument is option to display the intermediate values in the series as well.
 
 `./fibonacci 10 s`
+
+The second fibonacci program uses Binets algorithm. When the entire sequence is requested using the `s` flag, it is parallelized using Binet's algorithm.
+It can be called with the following command:
+
+`./fibonacci_omp 10 s`
+
 
 ### Running Liebniz
 
