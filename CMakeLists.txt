@@ -14,7 +14,6 @@ add_executable(matrixmatrix_test src/MatrixMatrix/matrixmatrix_test.c include/mm
 
 add_executable(fibonacci src/fibonacci/fibonacci.c)
 add_executable(fibonacci_omp src/fibonacci/fibonacci_omp.c)
-add_executable(fibonacci_omp2 src/fibonacci/fibonacci_omp2.c)
 add_executable(fibonacci_test src/fibonacci/fibonacci_test.c)
 
 
