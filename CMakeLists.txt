@@ -13,7 +13,7 @@ add_executable(matrixmatrix src/MatrixMatrix/matrixmatrix.c include/mmio.h libs/
 add_executable(matrixmatrix_test src/MatrixMatrix/matrixmatrix_test.c include/mmio.h libs/mmio.c src/MatrixMatrix/matrixoperations.h src/MatrixMatrix/matrixoperations.c)
 
 add_executable(fibonacci src/fibonacci/fibonacci.c)
-add_executable(fibonacci src/fibonacci/fibonacci_omp.c
+add_executable(fibonacci src/fibonacci/fibonacci_omp.c)
 add_executable(fibonacci_test src/fibonacci/fibonacci_test.c)
 
 
