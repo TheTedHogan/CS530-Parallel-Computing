@@ -2,14 +2,14 @@
 #include <stdlib.h>
 #include <mmio.h>
 #include "matrixoperations.h"
-#include <sys/time.h>
+#include <time.h>
 
 int coord_to_index(int row_coord, int col_coord, int columns){
     return (row_coord * columns) + col_coord;
 }
 
 int matrix_matrix_multiply(int matrix_dimensions_a[], int matrix_dimensions_b[], double matrix_a[], double matrix_b[], double *output_matrix){
-    int i, j, k;
+    int i, j, k, numThreads;
     struct timeval startTime, endTime;
 
 
@@ -20,10 +20,14 @@ int matrix_matrix_multiply(int matrix_dimensions_a[], int matrix_dimensions_b[],
         return 1;
     }
 
-    gettimeofday(&startTime, 0);
+    clock_t begin = clock();
 
-    #pragma omp parallel default(none) shared(matrix_dimensions_a, matrix_dimensions_b, matrix_a, matrix_b, output_matrix) private(i, j, k)
+    #pragma omp parallel default(none) shared(matrix_dimensions_a, matrix_dimensions_b, matrix_a, matrix_b, output_matrix, numThreads) private(i, j, k)
     {
+        #pragma omp single
+        {
+          numThreads = omp_get_num_threads();
+        }
         #pragma omp for schedule(static) collapse(3)
         for(i = 0; i < matrix_dimensions_a[0]; i++){
             for(j = 0; j < matrix_dimensions_b[1]; j++){
@@ -34,8 +38,12 @@ int matrix_matrix_multiply(int matrix_dimensions_a[], int matrix_dimensions_b[],
         }
     }
 
-    #pragma omp parallel default(none) shared(matrix_dimensions_a, matrix_dimensions_b, matrix_a, matrix_b, output_matrix) private(i, j, k)
+    #pragma omp parallel default(none) shared(matrix_dimensions_a, matrix_dimensions_b, matrix_a, matrix_b, output_matrix, numThreads) private(i, j, k)
     {
+      #pragma omp single
+      {
+        numThreads = omp_get_num_threads();
+      }
       #pragma omp for schedule(static) collapse(3)
       for(i = 0; i < matrix_dimensions_a[0]; i++){
           for(j = 0; j < matrix_dimensions_b[1]; j++){
@@ -46,11 +54,11 @@ int matrix_matrix_multiply(int matrix_dimensions_a[], int matrix_dimensions_b[],
       }
     }
 
-    gettimeofday(&endTime, 0);
+    clock_t end = clock();
 
-    double timeElapsed = (endTime.tv_sec - startTime.tv_sec) * 1.0f + (endTime.tv_usec - startTime.tv_usec) / 1000000.0f;
-    printf("Time elapsed for matrix multiplications is %0.2f seconds\n", timeElapsed);
-
+    double timeElapsed = (double)(end - begin) / CLOCKS_PER_SEC / 1000;
+    // printf("Time elapsed for matrix multiplications is %0.2f seconds\n", timeElapsed);
+    printf("%d\t%0.6f\t\n", numThreads, timeElapsed);
     return(0);
 }
 

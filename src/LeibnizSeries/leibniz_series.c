@@ -2,6 +2,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <omp.h>
+#include <time.h>
 
 void validInput(int input_1, float input_2){
     if(input_1 < 1){
@@ -18,7 +19,7 @@ int main(int argc, char * argv[]){
     int n;  //number of desired iterations.
     float check;
     float pi;
-
+    int numThreads;
 
     if(argc != 2){
         fprintf(stderr, "Usage: please input desired number of iterations.\n");
@@ -32,18 +33,28 @@ int main(int argc, char * argv[]){
     //printf("The desired # of iterations is: %d\n",n);
 
     validInput(n,check);
-    
+
 
     int i;
-    #pragma omp parallel for default(none) shared(n) reduction(+:pi)
-    for(i = 0; i < n; ++i){
-        pi += (pow(-1,i))/(2*i+1);
+    clock_t begin = clock();
+    #pragma omp parallel default(none) shared(n, numThreads) reduction(+:pi)
+    {
+      #pragma omp single
+      {
+        numThreads = omp_get_num_threads();
+      }
+      #pragma omp for
+      for(i = 0; i < n; ++i){
+          pi += (pow(-1,i))/(2*i+1);
+      }
     }
+    clock_t end = clock();
 
     pi *= 4;
 
-    printf("The approximated value of pi is: %.6f\n", pi);
-
+    double timeSpent = ((double)(end - begin)/CLOCKS_PER_SEC) / 1000;
+    //printf("The approximated value of pi is: %.6f\n", pi);
+    printf("%d\t%0.6f\t\n", numThreads, timeSpent);
     return pi;
 
 }

@@ -56,16 +56,16 @@ int main(int argc, char *argv[])
     int nthTerm = atoi(argv[1]);
     int* sequence = getFibonacciSequence(nthTerm);
 
-    for (int i = 0; i < nthTerm; i++)
-    {
-      printf("%d ", sequence[i]);
-    }
-    printf("\n");
+    // for (int i = 0; i < nthTerm; i++)
+    // {
+    //   printf("%d ", sequence[i]);
+    // }
+    // printf("\n");
   }
   else if (argc == 2 && isdigit(*argv[1]))
   {
-    int nthTerm = atoi(argv[1]);
-    printf("%d\n", getFibonacciNumber(nthTerm));
+    // int nthTerm = atoi(argv[1]);
+    // printf("%d\n", getFibonacciNumber(nthTerm));
   }
   else
   {

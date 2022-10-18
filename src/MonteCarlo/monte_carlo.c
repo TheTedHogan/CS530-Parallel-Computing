@@ -27,6 +27,7 @@ int main(int argc, char * argv[]){
     double rand_max = (double) RAND_MAX;
     int inside = 0; // count for the number of point with r less than 1.
     int entropySource;
+    int numThreads;
 
     if(argc != 2){
         fprintf(stderr, "Usage: please input desired number of iterations.\n");
@@ -38,17 +39,18 @@ int main(int argc, char * argv[]){
 
     //printf("The desired # of iterations is: %d\n",n);
     validInput(n,atof(argv[1]));
-    
-    entropySource = open("/dev/random",  O_RDONLY);
 
-    #pragma omp parallel default(none) shared(n, inside, entropySource, rand_max) private(r,x,y)
+    entropySource = open("/dev/random",  O_RDONLY);
+    clock_t begin = clock();
+    #pragma omp parallel default(none) shared(n, inside, entropySource, rand_max, numThreads) private(r,x,y)
     {
         int myseed;
         read(entropySource, &myseed , sizeof(rand));
 
         #pragma omp single
         {
-            printf("Number of threads: %d\n", omp_get_num_threads());
+            numThreads = omp_get_num_threads();
+            //printf("Number of threads: %d\n", omp_get_num_threads());
         }
         #pragma omp for reduction(+:inside)
         for (int i = 0; i < n; ++i) {
@@ -64,13 +66,15 @@ int main(int argc, char * argv[]){
         }
     }
     close(entropySource);
+    clock_t end = clock();
+    // printf("inside is equal to: %d\n", inside);
+    // inside= 10;
+    // pi = 4*(((double)inside)/n);
 
-    printf("inside is equal to: %d\n", inside);
-    inside= 10;
-    pi = 4*(((double)inside)/n);
+    // printf("The approximated value of pi is: %.6f\n", pi);
+    double timeElapsed = (double)(end - begin)/CLOCKS_PER_SEC/1000.0;
 
-    printf("The approximated value of pi is: %.6f\n", pi);
-
+    printf("%d\t%0.6f\t\n", numThreads, timeElapsed);
     return 0;
 
 }
