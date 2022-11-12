@@ -51,7 +51,7 @@ int main(int argc, char * argv[]){
     srand((int)time());
 
 
-    for (i = rank; i < 1E8; i+=size) {
+    for (i = 0; i < n; i+=size) {
       x = rand()/(RAND_MAX+1.0);
       y = rand()/(RAND_MAX+1.0);
       if (x*x+y*y < 1) {
@@ -65,7 +65,7 @@ int main(int argc, char * argv[]){
     end = MPI_WTIME();
 
     if (rank == 0) {
-      pi = 4*1E-8*sum;
+      pi = 4/n*sum;
       printf("%2d\t%fsecs\t%0.6f\t", size, start - end, pi);
     }
 
