@@ -29,13 +29,14 @@ int main(int argc, char * argv[]){
     double end;
     double x;
     double y;
+    int n;
 
-    error = MPI_INIT(&argc, &argv);
-    MPI_Comm_Rank(MPI_COMM_WORLD, &rank);
-    MPI_Comm_Size(MPI_COMM_SIZE, &commSize);
-    MPI_BARRIER(MPI_COMM_WORLD);
+    error = MPI_Init(&argc, &argv);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    MPI_Barrier(MPI_COMM_WORLD);
 
-    start = MPI_WTIME();
+    start = MPI_Wtime();
 
     if(argc != 2){
         fprintf(stderr, "Usage: please input desired number of iterations.\n");
@@ -48,7 +49,7 @@ int main(int argc, char * argv[]){
     //printf("The desired # of iterations is: %d\n",n);
     validInput(n,atof(argv[1]));
 
-    srand((int)time());
+    srand((int)time(0));
 
 
     for (i = 0; i < n; i+=size) {
@@ -59,14 +60,14 @@ int main(int argc, char * argv[]){
       }
     }
 
-    MPI_REDUCE(&result, &sum, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
+    MPI_Reduce(&result, &sum, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
 
-    MPI_BARRIER(MPI_COMM_WORLD);
-    end = MPI_WTIME();
+    MPI_Barrier(MPI_COMM_WORLD);
+    end = MPI_Wtime();
 
     if (rank == 0) {
-      pi = 4/n*sum;
-      printf("%2d\t%fsecs\t%0.6f\t", size, start - end, pi);
+      pi = 4*((double)sum/n);
+      printf("%2d\t%fsecs\t%0.6f\t", size, end - start, pi);
     }
 
     MPI_Finalize();
