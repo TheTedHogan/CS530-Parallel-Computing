@@ -16,6 +16,8 @@ add_executable(fibonacci src/fibonacci/fibonacci.c)
 add_executable(fibonacci_omp src/fibonacci/fibonacci_omp.c)
 add_executable(fibonacci_test src/fibonacci/fibonacci_test.c)
 
+target_link_libraries(fibonacci_omp m)
+
 
 add_executable(leibniz src/LeibnizSeries/leibniz_series.c)
 target_link_libraries(leibniz m)

@@ -3,7 +3,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <time.h>
-#include <omp.h>
+#include <mpi.h>
 #include <fcntl.h>
 
 void validInput(int input_1, float input_2){
@@ -18,15 +18,25 @@ void validInput(int input_1, float input_2){
 }
 
 int main(int argc, char * argv[]){
-    int n;  //number of desired iterations.
-    float check;
-    float pi = 0;
-    double x = 0;  // x value of a particular coordinate.
-    double y = 0;  // y value of a particular coordinate.
-    double r = 0;  // distance to the origin.
-    double rand_max = (double) RAND_MAX;
-    int inside = 0; // count for the number of point with r less than 1.
-    int entropySource;
+    int rank;
+    int size;
+    int error;
+    int i;
+    int result = 0;
+    int sum = 0;
+    double pi = 0;
+    double start;
+    double end;
+    double x;
+    double y;
+    int n;
+
+    error = MPI_Init(&argc, &argv);
+    MPI_Comm_rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_size(MPI_COMM_WORLD, &size);
+    MPI_Barrier(MPI_COMM_WORLD);
+
+    start = MPI_Wtime();
 
     if(argc != 2){
         fprintf(stderr, "Usage: please input desired number of iterations.\n");
@@ -38,38 +48,29 @@ int main(int argc, char * argv[]){
 
     //printf("The desired # of iterations is: %d\n",n);
     validInput(n,atof(argv[1]));
-    
-    entropySource = open("/dev/random",  O_RDONLY);
 
-    #pragma omp parallel default(none) shared(n, inside, entropySource, rand_max) private(r,x,y)
-    {
-        int myseed;
-        read(entropySource, &myseed , sizeof(rand));
+    srand((int)time(0));
 
-        #pragma omp single
-        {
-            printf("Number of threads: %d\n", omp_get_num_threads());
-        }
-        #pragma omp for reduction(+:inside)
-        for (int i = 0; i < n; ++i) {
-            x = rand_r(&myseed) / rand_max;
-            y = rand_r(&myseed) / rand_max;
-            //printf("x is: %f and y is: %f\n", x,y);
-            r = sqrt(pow(x, 2) + pow(y, 2));
-            //printf("r is equal to: %f\n", r);
 
-            if (r <= 1) {
-                inside++;
-            }
-        }
+    for (i = 0; i < n; i+=size) {
+      x = rand()/(RAND_MAX+1.0);
+      y = rand()/(RAND_MAX+1.0);
+      if (x*x+y*y < 1) {
+        result++;
+      }
     }
-    close(entropySource);
 
-    printf("inside is equal to: %d\n", inside);
-    inside= 10;
-    pi = 4*(((double)inside)/n);
+    MPI_Reduce(&result, &sum, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
 
-    printf("The approximated value of pi is: %.6f\n", pi);
+    MPI_Barrier(MPI_COMM_WORLD);
+    end = MPI_Wtime();
+
+    if (rank == 0) {
+      pi = 4*((double)sum/n);
+      printf("%2d\t%fsecs\t%0.6f\t", size, end - start, pi);
+    }
+
+    MPI_Finalize();
 
     return 0;
 
