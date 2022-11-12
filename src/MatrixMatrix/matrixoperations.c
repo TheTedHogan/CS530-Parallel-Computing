@@ -2,23 +2,30 @@
 #include <stdlib.h>
 #include <mmio.h>
 #include "matrixoperations.h"
+<<<<<<< HEAD
 #include <time.h>
+=======
+>>>>>>> matrix mpi with MPI_recv issue
 
 int coord_to_index(int row_coord, int col_coord, int columns){
     return (row_coord * columns) + col_coord;
 }
 
 int matrix_matrix_multiply(int matrix_dimensions_a[], int matrix_dimensions_b[], double matrix_a[], double matrix_b[], double *output_matrix){
+<<<<<<< HEAD
     int i, j, k, numThreads;
     struct timeval startTime, endTime;
 
 
+=======
+>>>>>>> matrix mpi with MPI_recv issue
     if(matrix_dimensions_a[1] != matrix_dimensions_b[0]){
-        printf("Matrices are incompatible shapes to multiply\n");
+        printf("Matrix and vector are incompatible shapes to multiply\n");
         printf("Matrix A has %d columns\n", matrix_dimensions_a[1]);
         printf("Matrix B has %d rows\n", matrix_dimensions_b[0]);
         return 1;
     }
+<<<<<<< HEAD
 
     clock_t begin = clock();
 
@@ -59,6 +66,17 @@ int matrix_matrix_multiply(int matrix_dimensions_a[], int matrix_dimensions_b[],
     double timeElapsed = (double)(end - begin) / CLOCKS_PER_SEC / 1000;
     // printf("Time elapsed for matrix multiplications is %0.2f seconds\n", timeElapsed);
     printf("%d\t%0.6f\t\n", numThreads, timeElapsed);
+=======
+    for(int i = 0; i < matrix_dimensions_a[0]; i++){
+        for(int j = 0; j < matrix_dimensions_b[1]; j++){
+            int result_index = coord_to_index(i, j, matrix_dimensions_b[1]);
+            output_matrix[result_index] = 0;
+            for(int k = 0; k < matrix_dimensions_b[0]; k++){
+                output_matrix[result_index] += matrix_a[coord_to_index(i, k, matrix_dimensions_a[1])] * matrix_b[coord_to_index(k, j, matrix_dimensions_b[1])];
+            }
+        }
+    }
+>>>>>>> matrix mpi with MPI_recv issue
     return(0);
 }
 
