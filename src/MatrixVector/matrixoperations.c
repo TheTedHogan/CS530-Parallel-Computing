@@ -3,14 +3,14 @@
 #include <mmio.h>
 #include "matrixoperations.h"
 #include <omp.h>
-#include <sys/time.h>
+#include <time.h>
 
 int coord_to_index(int row_coord, int col_coord, int columns){
     return (row_coord * columns) + col_coord;
 }
 int matrix_vector_multiply(int matrix_dimensions[], int vector_dimensions[], double matrix[], double vector[], double *output_matrix){
     int i, j, numThreads;
-    struct timeval startTime, endTime;
+    
 
 
     if(matrix_dimensions[1] != vector_dimensions[0]){
@@ -24,7 +24,7 @@ int matrix_vector_multiply(int matrix_dimensions[], int vector_dimensions[], dou
         return 1;
     }
 
-    gettimeofday(&startTime, 0);
+    clock_t begin = clock();
 
     #pragma omp parallel default(none) shared(matrix_dimensions, vector_dimensions, matrix, vector, output_matrix, numThreads) private(i, j)
     {
@@ -56,8 +56,8 @@ int matrix_vector_multiply(int matrix_dimensions[], int vector_dimensions[], dou
       }
     }
 
-    gettimeofday(&endTime, 0);
-    double timeElapsed = (endTime.tv_sec - startTime.tv_sec) * 1.0f + (endTime.tv_usec - startTime.tv_usec) / 1000000.0f;
+    clock_t end = clock();
+    double timeElapsed = ((double)(end-begin)/CLOCKS_PER_SEC) / 100000;
     // printf("Time elapsed for matrix multiplications is %0.2f seconds\n", timeElapsed);
     printf("%d\t%0.6f\t\n", numThreads, timeElapsed);
     return(0);

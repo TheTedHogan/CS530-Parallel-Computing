@@ -1,0 +1,62 @@
+-- The C compiler identification is GNU 10.2.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /cm/shared/apps/gcc/10.2/bin/gcc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/baselanani/parallel/CS530-Parallel-Computing/build
+Scanning dependencies of target leibniz
+[  3%] Building C object CMakeFiles/leibniz.dir/src/LeibnizSeries/leibniz_series.c.o
+[  6%] Linking C executable leibniz
+[  6%] Built target leibniz
+Scanning dependencies of target fibonacci_test
+[ 10%] Building C object CMakeFiles/fibonacci_test.dir/src/fibonacci/fibonacci_test.c.o
+[ 13%] Linking C executable fibonacci_test
+[ 13%] Built target fibonacci_test
+Scanning dependencies of target fibonacci_omp
+[ 16%] Building C object CMakeFiles/fibonacci_omp.dir/src/fibonacci/fibonacci_omp.c.o
+[ 20%] Linking C executable fibonacci_omp
+[ 20%] Built target fibonacci_omp
+Scanning dependencies of target fibonacci
+[ 23%] Building C object CMakeFiles/fibonacci.dir/src/fibonacci/fibonacci.c.o
+[ 26%] Linking C executable fibonacci
+[ 26%] Built target fibonacci
+Scanning dependencies of target matrixmatrix_test
+[ 30%] Building C object CMakeFiles/matrixmatrix_test.dir/src/MatrixMatrix/matrixmatrix_test.c.o
+[ 33%] Building C object CMakeFiles/matrixmatrix_test.dir/libs/mmio.c.o
+[ 36%] Building C object CMakeFiles/matrixmatrix_test.dir/src/MatrixMatrix/matrixoperations.c.o
+[ 40%] Linking C executable matrixmatrix_test
+[ 40%] Built target matrixmatrix_test
+Scanning dependencies of target montecarlo_test
+[ 43%] Building C object CMakeFiles/montecarlo_test.dir/src/MonteCarlo/monte_carlo_test.c.o
+[ 46%] Linking C executable montecarlo_test
+[ 46%] Built target montecarlo_test
+Scanning dependencies of target montecarlo
+[ 50%] Building C object CMakeFiles/montecarlo.dir/src/MonteCarlo/monte_carlo.c.o
+[ 53%] Linking C executable montecarlo
+[ 53%] Built target montecarlo
+Scanning dependencies of target leibniz_test
+[ 56%] Building C object CMakeFiles/leibniz_test.dir/src/LeibnizSeries/leibniz_series_test.c.o
+[ 60%] Linking C executable leibniz_test
+[ 60%] Built target leibniz_test
+Scanning dependencies of target matrixmatrix
+[ 63%] Building C object CMakeFiles/matrixmatrix.dir/src/MatrixMatrix/matrixmatrix.c.o
+[ 66%] Building C object CMakeFiles/matrixmatrix.dir/libs/mmio.c.o
+[ 70%] Building C object CMakeFiles/matrixmatrix.dir/src/MatrixMatrix/matrixoperations.c.o
+[ 73%] Linking C executable matrixmatrix
+[ 73%] Built target matrixmatrix
+Scanning dependencies of target matrixvector_test
+[ 76%] Building C object CMakeFiles/matrixvector_test.dir/src/MatrixVector/matrixvector_test.c.o
+[ 80%] Building C object CMakeFiles/matrixvector_test.dir/libs/mmio.c.o
+[ 83%] Building C object CMakeFiles/matrixvector_test.dir/src/MatrixVector/matrixoperations.c.o
+[ 86%] Linking C executable matrixvector_test
+[ 86%] Built target matrixvector_test
+Scanning dependencies of target matrixvector
+[ 90%] Building C object CMakeFiles/matrixvector.dir/src/MatrixVector/matrixvector.c.o
+[ 93%] Building C object CMakeFiles/matrixvector.dir/libs/mmio.c.o
+[ 96%] Building C object CMakeFiles/matrixvector.dir/src/MatrixVector/matrixoperations.c.o
+[100%] Linking C executable matrixvector
+[100%] Built target matrixvector
+slurmstepd: error: *** JOB 400986 ON r2-cpu-27 CANCELLED AT 2022-10-17T21:22:44 ***

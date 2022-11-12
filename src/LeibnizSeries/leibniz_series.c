@@ -52,7 +52,7 @@ int main(int argc, char * argv[]){
 
     pi *= 4;
 
-    double timeSpent = ((double)(end - begin)/CLOCKS_PER_SEC) / 1000;
+    double timeSpent = ((double)(end - begin)/CLOCKS_PER_SEC) / 100000;
     //printf("The approximated value of pi is: %.6f\n", pi);
     printf("%d\t%0.6f\t\n", numThreads, timeSpent);
     return pi;

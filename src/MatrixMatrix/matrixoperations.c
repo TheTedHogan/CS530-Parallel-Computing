@@ -3,6 +3,7 @@
 #include <mmio.h>
 #include "matrixoperations.h"
 #include <time.h>
+#include <omp.h>
 
 int coord_to_index(int row_coord, int col_coord, int columns){
     return (row_coord * columns) + col_coord;
@@ -56,7 +57,7 @@ int matrix_matrix_multiply(int matrix_dimensions_a[], int matrix_dimensions_b[],
 
     clock_t end = clock();
 
-    double timeElapsed = (double)(end - begin) / CLOCKS_PER_SEC / 1000;
+    double timeElapsed = (double)(end - begin) / CLOCKS_PER_SEC / 100000;
     // printf("Time elapsed for matrix multiplications is %0.2f seconds\n", timeElapsed);
     printf("%d\t%0.6f\t\n", numThreads, timeElapsed);
     return(0);

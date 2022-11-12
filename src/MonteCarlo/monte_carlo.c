@@ -72,7 +72,7 @@ int main(int argc, char * argv[]){
     // pi = 4*(((double)inside)/n);
 
     // printf("The approximated value of pi is: %.6f\n", pi);
-    double timeElapsed = (double)(end - begin)/CLOCKS_PER_SEC/1000.0;
+    double timeElapsed = (double)(end - begin)/CLOCKS_PER_SEC/100000.0;
 
     printf("%d\t%0.6f\t\n", numThreads, timeElapsed);
     return 0;

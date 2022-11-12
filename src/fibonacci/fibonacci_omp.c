@@ -45,7 +45,7 @@ double* getFibonacciSequence(int n)
     }
   }
   clock_t end = clock();
-  double timeSpent = ((double)(end - begin)/CLOCKS_PER_SEC)/1000;
+  double timeSpent = ((double)(end - begin)/CLOCKS_PER_SEC)/100000;
 
   printf("%d\t%0.6f\t\n", numThreads, timeSpent);
   return fibArray;
