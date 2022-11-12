@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
-#include <omp.h>
+#include <mpi.h>
 #include <time.h>
 
 void validInput(int input_1, float input_2){
@@ -19,7 +19,12 @@ int main(int argc, char * argv[]){
     int n;  //number of desired iterations.
     float check;
     float pi;
-    int numThreads;
+    int rank;
+    int commSize;
+
+    MPI_INIT(&argc, &argv);
+    MPI_Comm_Rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_Size(MP_COMM_SIZE, &commSize);
 
     if(argc != 2){
         fprintf(stderr, "Usage: please input desired number of iterations.\n");
@@ -37,16 +42,12 @@ int main(int argc, char * argv[]){
 
     int i;
     clock_t begin = clock();
-    #pragma omp parallel default(none) shared(n, numThreads) reduction(+:pi)
-    {
-      #pragma omp single
-      {
-        numThreads = omp_get_num_threads();
-      }
-      #pragma omp for
-      for(i = 0; i < n; ++i){
-          pi += (pow(-1,i))/(2*i+1);
-      }
+
+    for(i = 0; i < n; ++i){
+
+      if (i % commSize != rank) continue;
+
+      pi += (pow(-1,i))/(2*i+1);
     }
     clock_t end = clock();
 
@@ -54,7 +55,7 @@ int main(int argc, char * argv[]){
 
     double timeSpent = ((double)(end - begin)/CLOCKS_PER_SEC) / 1000;
     //printf("The approximated value of pi is: %.6f\n", pi);
-    printf("%d\t%0.6f\t\n", numThreads, timeSpent);
+    printf("%d\t%0.6f\t\n", commSize, timeSpent);
     return pi;
 
 }
