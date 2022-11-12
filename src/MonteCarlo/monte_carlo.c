@@ -32,7 +32,7 @@ int main(int argc, char * argv[]){
 
     error = MPI_INIT(&argc, &argv);
     MPI_Comm_Rank(MPI_COMM_WORLD, &rank);
-    MPI_Comm_Size(MP_COMM_SIZE, &commSize);
+    MPI_Comm_Size(MPI_COMM_SIZE, &commSize);
     MPI_BARRIER(MPI_COMM_WORLD);
 
     start = MPI_WTIME();
