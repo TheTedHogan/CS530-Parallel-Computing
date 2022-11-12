@@ -26,7 +26,7 @@ int matrix_matrix_multiply(int matrix_dimensions_a[], int matrix_dimensions_b[],
         return 1;
     }
 
-    gettimeofday(&startTime, 0);
+    //gettimeofday(&startTime, 0);
 
     for(i = 0; i < matrix_dimensions_a[0]; i++){
         for(j = 0; j < matrix_dimensions_b[1]; j++){
@@ -45,10 +45,10 @@ int matrix_matrix_multiply(int matrix_dimensions_a[], int matrix_dimensions_b[],
       }
   }
 
-    gettimeofday(&endTime, 0);
+    //gettimeofday(&endTime, 0);
 
-    double timeElapsed = (endTime.tv_sec - startTime.tv_sec) * 1.0f + (endTime.tv_usec - startTime.tv_usec) / 1000000.0f;
-    printf("Time elapsed for matrix multiplications is %0.2f seconds\n", timeElapsed);
+    //double timeElapsed = (endTime.tv_sec - startTime.tv_sec) * 1.0f + (endTime.tv_usec - startTime.tv_usec) / 1000000.0f;
+    //printf("Time elapsed for matrix multiplications is %0.2f seconds\n", timeElapsed);
 
     return(0);
 }
