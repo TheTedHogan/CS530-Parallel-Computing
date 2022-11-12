@@ -3,7 +3,7 @@
 #include <math.h>
 #include <stdlib.h>
 #include <time.h>
-#include <omp.h>
+#include <mpi.h>
 #include <fcntl.h>
 
 void validInput(int input_1, float input_2){
@@ -28,6 +28,12 @@ int main(int argc, char * argv[]){
     int inside = 0; // count for the number of point with r less than 1.
     int entropySource;
     int numThreads;
+    int rank;
+    int commSize;
+
+    MPI_INIT(&argc, &argv);
+    MPI_Comm_Rank(MPI_COMM_WORLD, &rank);
+    MPI_Comm_Size(MP_COMM_SIZE, &commSize);
 
     if(argc != 2){
         fprintf(stderr, "Usage: please input desired number of iterations.\n");
@@ -42,29 +48,26 @@ int main(int argc, char * argv[]){
 
     entropySource = open("/dev/random",  O_RDONLY);
     clock_t begin = clock();
-    #pragma omp parallel default(none) shared(n, inside, entropySource, rand_max, numThreads) private(r,x,y)
-    {
-        int myseed;
-        read(entropySource, &myseed , sizeof(rand));
 
-        #pragma omp single
-        {
-            numThreads = omp_get_num_threads();
-            //printf("Number of threads: %d\n", omp_get_num_threads());
-        }
-        #pragma omp for reduction(+:inside)
-        for (int i = 0; i < n; ++i) {
-            x = rand_r(&myseed) / rand_max;
-            y = rand_r(&myseed) / rand_max;
-            //printf("x is: %f and y is: %f\n", x,y);
-            r = sqrt(pow(x, 2) + pow(y, 2));
-            //printf("r is equal to: %f\n", r);
+    int myseed;
+    read(entropySource, &myseed , sizeof(rand));
 
-            if (r <= 1) {
-                inside++;
-            }
+
+    for (int i = 0; i < n; ++i) {
+
+        if (i % commSize != rank) continue;
+
+        x = rand_r(&myseed) / rand_max;
+        y = rand_r(&myseed) / rand_max;
+        //printf("x is: %f and y is: %f\n", x,y);
+        r = sqrt(pow(x, 2) + pow(y, 2));
+        //printf("r is equal to: %f\n", r);
+
+        if (r <= 1) {
+            inside++;
         }
     }
+
     close(entropySource);
     clock_t end = clock();
     // printf("inside is equal to: %d\n", inside);
@@ -74,7 +77,7 @@ int main(int argc, char * argv[]){
     // printf("The approximated value of pi is: %.6f\n", pi);
     double timeElapsed = (double)(end - begin)/CLOCKS_PER_SEC/1000.0;
 
-    printf("%d\t%0.6f\t\n", numThreads, timeElapsed);
+    printf("%d\t%0.6f\t\n", commSize, timeElapsed);
     return 0;
 
 }
