@@ -2,71 +2,19 @@
 #include <stdlib.h>
 #include <mmio.h>
 #include "matrixoperations.h"
-<<<<<<< HEAD
 #include <time.h>
-=======
->>>>>>> matrix mpi with MPI_recv issue
 
 int coord_to_index(int row_coord, int col_coord, int columns){
     return (row_coord * columns) + col_coord;
 }
 
 int matrix_matrix_multiply(int matrix_dimensions_a[], int matrix_dimensions_b[], double matrix_a[], double matrix_b[], double *output_matrix){
-<<<<<<< HEAD
-    int i, j, k, numThreads;
-    struct timeval startTime, endTime;
-
-
-=======
->>>>>>> matrix mpi with MPI_recv issue
     if(matrix_dimensions_a[1] != matrix_dimensions_b[0]){
         printf("Matrix and vector are incompatible shapes to multiply\n");
         printf("Matrix A has %d columns\n", matrix_dimensions_a[1]);
         printf("Matrix B has %d rows\n", matrix_dimensions_b[0]);
         return 1;
     }
-<<<<<<< HEAD
-
-    clock_t begin = clock();
-
-    #pragma omp parallel default(none) shared(matrix_dimensions_a, matrix_dimensions_b, matrix_a, matrix_b, output_matrix, numThreads) private(i, j, k)
-    {
-        #pragma omp single
-        {
-          numThreads = omp_get_num_threads();
-        }
-        #pragma omp for schedule(static) collapse(3)
-        for(i = 0; i < matrix_dimensions_a[0]; i++){
-            for(j = 0; j < matrix_dimensions_b[1]; j++){
-                for(k = 0; k < matrix_dimensions_b[0]; k++){
-                    output_matrix[coord_to_index(i, j, matrix_dimensions_b[1])] = 0;
-                }
-            }
-        }
-    }
-
-    #pragma omp parallel default(none) shared(matrix_dimensions_a, matrix_dimensions_b, matrix_a, matrix_b, output_matrix, numThreads) private(i, j, k)
-    {
-      #pragma omp single
-      {
-        numThreads = omp_get_num_threads();
-      }
-      #pragma omp for schedule(static) collapse(3)
-      for(i = 0; i < matrix_dimensions_a[0]; i++){
-          for(j = 0; j < matrix_dimensions_b[1]; j++){
-             for(k = 0; k < matrix_dimensions_b[0]; k++){
-                  output_matrix[coord_to_index(i, j, matrix_dimensions_b[1])] += matrix_a[coord_to_index(i, k, matrix_dimensions_a[1])] * matrix_b[coord_to_index(k, j, matrix_dimensions_b[1])];
-              }
-          }
-      }
-    }
-
-    clock_t end = clock();
-
-    double timeElapsed = (double)(end - begin) / CLOCKS_PER_SEC / 1000;
-    // printf("Time elapsed for matrix multiplications is %0.2f seconds\n", timeElapsed);
-    printf("%d\t%0.6f\t\n", numThreads, timeElapsed);
-=======
     for(int i = 0; i < matrix_dimensions_a[0]; i++){
         for(int j = 0; j < matrix_dimensions_b[1]; j++){
             int result_index = coord_to_index(i, j, matrix_dimensions_b[1]);
@@ -76,7 +24,6 @@ int matrix_matrix_multiply(int matrix_dimensions_a[], int matrix_dimensions_b[],
             }
         }
     }
->>>>>>> matrix mpi with MPI_recv issue
     return(0);
 }
 
