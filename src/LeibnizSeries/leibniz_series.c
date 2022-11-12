@@ -18,13 +18,14 @@ void validInput(int input_1, float input_2){
 int main(int argc, char * argv[]){
     int n;  //number of desired iterations.
     float check;
-    float pi;
     int rank;
     int commSize;
 
     MPI_INIT(&argc, &argv);
     MPI_Comm_Rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_Size(MP_COMM_SIZE, &commSize);
+
+    MPI_BARRIER(MPI_COMM_WORLD);
 
     if(argc != 2){
         fprintf(stderr, "Usage: please input desired number of iterations.\n");
@@ -39,23 +40,32 @@ int main(int argc, char * argv[]){
 
     validInput(n,check);
 
+    double startTime = MPI_Wtime();
 
-    int i;
-    clock_t begin = clock();
+    MPI_BCast(&n, 1, MPI_INT, 0, MPI_COMM_WORLD);
 
-    for(i = 0; i < n; ++i){
+    int count = n / commSize;
+    int start = count * rank;
+    int end = count * rank + count;
 
-      if (i % commSize != rank) continue;
+    int i = 0;
+    double pi = 0;
+    double segmentTotal = 0;
 
-      pi += (pow(-1,i))/(2*i+1);
+    for (i = start; i < end; i++) {
+      segmentTotal += pow(-1, i)/(2 * i + 1);
     }
-    clock_t end = clock();
 
-    pi *= 4;
+    MPI_REDUCE(&segmentTotal, &pi, 1, MPI_DOUBLE, MPI_SUM, 0, MPI_COMM_WORLD);
 
-    double timeSpent = ((double)(end - begin)/CLOCKS_PER_SEC) / 1000;
+    double endTime = MPI_Wtime();
     //printf("The approximated value of pi is: %.6f\n", pi);
-    printf("%d\t%0.6f\t\n", commSize, timeSpent);
+    if (rank == 0) {
+      total = total *= 4;
+      printf("%2d\t%fsecs\t%0.6f", size, startTime - endTime, pi)
+    }
+
+    MPI_Finalize();
     return pi;
 
 }

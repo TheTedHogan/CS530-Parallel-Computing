@@ -69,6 +69,8 @@ int main(int argc, char * argv[]){
       printf("%2d\t%fsecs\t%0.6f\t", size, start - end, pi);
     }
 
+    MPI_Finalize();
+
     return 0;
 
 }
