@@ -69,16 +69,6 @@ int main(int argc, char * argv[]){
       printf("%2d\t%fsecs\t%0.6f\t", size, start - end, pi);
     }
 
-    close(entropySource);
-    clock_t end = clock();
-    // printf("inside is equal to: %d\n", inside);
-    // inside= 10;
-    // pi = 4*(((double)inside)/n);
-
-    // printf("The approximated value of pi is: %.6f\n", pi);
-    double timeElapsed = (double)(end - begin)/CLOCKS_PER_SEC/1000.0;
-
-    printf("%d\t%0.6f\t\n", commSize, timeElapsed);
     return 0;
 
 }
