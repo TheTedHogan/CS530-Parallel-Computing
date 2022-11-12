@@ -18,22 +18,24 @@ void validInput(int input_1, float input_2){
 }
 
 int main(int argc, char * argv[]){
-    int n;  //number of desired iterations.
-    float check;
-    float pi = 0;
-    double x = 0;  // x value of a particular coordinate.
-    double y = 0;  // y value of a particular coordinate.
-    double r = 0;  // distance to the origin.
-    double rand_max = (double) RAND_MAX;
-    int inside = 0; // count for the number of point with r less than 1.
-    int entropySource;
-    int numThreads;
     int rank;
-    int commSize;
+    int size;
+    int error;
+    int i;
+    int result = 0;
+    int sum = 0;
+    double pi = 0;
+    double start;
+    double end;
+    double x;
+    double y;
 
-    MPI_INIT(&argc, &argv);
+    error = MPI_INIT(&argc, &argv);
     MPI_Comm_Rank(MPI_COMM_WORLD, &rank);
     MPI_Comm_Size(MP_COMM_SIZE, &commSize);
+    MPI_BARRIER(MPI_COMM_WORLD);
+
+    start = MPI_WTIME();
 
     if(argc != 2){
         fprintf(stderr, "Usage: please input desired number of iterations.\n");
@@ -46,26 +48,25 @@ int main(int argc, char * argv[]){
     //printf("The desired # of iterations is: %d\n",n);
     validInput(n,atof(argv[1]));
 
-    entropySource = open("/dev/random",  O_RDONLY);
-    clock_t begin = clock();
-
-    int myseed;
-    read(entropySource, &myseed , sizeof(rand));
+    srand((int)time());
 
 
-    for (int i = 0; i < n; ++i) {
+    for (i = rank; i < 1E8; i+=size) {
+      x = rand()/(RAND_MAX+1.0);
+      y = rand()/(RAND_MAX+1.0);
+      if (x*x+y*y < 1) {
+        result++;
+      }
+    }
 
-        if (i % commSize != rank) continue;
+    MPI_REDUCE(&result, &sum, 1, MPI_INT, MPI_SUM, 0, MPI_COMM_WORLD);
 
-        x = rand_r(&myseed) / rand_max;
-        y = rand_r(&myseed) / rand_max;
-        //printf("x is: %f and y is: %f\n", x,y);
-        r = sqrt(pow(x, 2) + pow(y, 2));
-        //printf("r is equal to: %f\n", r);
+    MPI_BARRIER(MPI_COMM_WORLD);
+    end = MPI_WTIME();
 
-        if (r <= 1) {
-            inside++;
-        }
+    if (rank == 0) {
+      pi = 4*1E-8*sum;
+      printf("%2d\t%fsecs\t%0.6f\t", size, start - end, pi);
     }
 
     close(entropySource);
