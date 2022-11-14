@@ -1,21 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
 #include <mmio.h>
 #include "matrixoperations.h"
 #include <sys/time.h>
-#
-
+#include <cuda.h>
 int coord_to_index(int row_coord, int col_coord, int columns){
     return (row_coord * columns) + col_coord;
 }
 
-void index_to_coordinate(int index, int columns, int* coordinate){
-    coordinate[0] = index / columns;
-    coordinate[1] = index % columns;
-}
-
-int matrix_matrix_multiply(int matrix_dimensions_a[], int matrix_dimensions_b[], double matrix_a[], double matrix_b[], double *output_matrix){
+__GLOBAL__ int matrix_matrix_multiply(int matrix_dimensions_a[], int matrix_dimensions_b[], double matrix_a[], double matrix_b[], double *output_matrix){
     int i, j, k;
     struct timeval startTime, endTime;
 
@@ -27,7 +20,7 @@ int matrix_matrix_multiply(int matrix_dimensions_a[], int matrix_dimensions_b[],
         return 1;
     }
 
-    //gettimeofday(&startTime, 0);
+    gettimeofday(&startTime, 0);
 
     for(i = 0; i < matrix_dimensions_a[0]; i++){
         for(j = 0; j < matrix_dimensions_b[1]; j++){
@@ -38,18 +31,17 @@ int matrix_matrix_multiply(int matrix_dimensions_a[], int matrix_dimensions_b[],
     }
 
 
-  for(i = 0; i < matrix_dimensions_a[0]; i++){
-      for(j = 0; j < matrix_dimensions_b[1]; j++){
-         for(k = 0; k < matrix_dimensions_b[0]; k++){
-              output_matrix[coord_to_index(i, j, matrix_dimensions_b[1])] += matrix_a[coord_to_index(i, k, matrix_dimensions_a[1])] * matrix_b[coord_to_index(k, j, matrix_dimensions_b[1])];
+      for(i = 0; i < matrix_dimensions_a[0]; i++){
+          for(j = 0; j < matrix_dimensions_b[1]; j++){
+             for(k = 0; k < matrix_dimensions_b[0]; k++){
+                  output_matrix[coord_to_index(i, j, matrix_dimensions_b[1])] += matrix_a[coord_to_index(i, k, matrix_dimensions_a[1])] * matrix_b[coord_to_index(k, j, matrix_dimensions_b[1])];
+              }
           }
-      }
-  }
+    }
 
-    //gettimeofday(&endTime, 0);
 
-    //double timeElapsed = (endTime.tv_sec - startTime.tv_sec) * 1.0f + (endTime.tv_usec - startTime.tv_usec) / 1000000.0f;
-    //printf("Time elapsed for matrix multiplications is %0.2f seconds\n", timeElapsed);
+    double timeElapsed = (endTime.tv_sec - startTime.tv_sec) * 1.0f + (endTime.tv_usec - startTime.tv_usec) / 1000000.0f;
+    printf("Time elapsed for matrix multiplications is %0.2f seconds\n", timeElapsed);
 
     return(0);
 }
@@ -101,17 +93,6 @@ void create_matrix_array(FILE *f, int * dimensions, double *matrix_out){
         matrix_out[(row_index[i] * columns) + column_index[i]] = val[i];
     }
 
-}
-
-void random_square_matrix(int n, double *matrix_out){
-    int myseed;
-    int entropySource;
-    read(entropySource, &myseed , sizeof(rand));
-    for(int i = 0; i < n; i++){
-        for(int j = 0; j < n; j++){
-            matrix_out[coord_to_index(i, j, n)] = rand_r(&myseed);
-        }
-    }
 }
 
 int write_matrix_to_file(FILE *f, int dimensions[], float matrix_out[]){
