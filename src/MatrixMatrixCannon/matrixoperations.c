@@ -18,7 +18,6 @@ int matrix_matrix_multiply(int matrix_dimensions_a[], int matrix_dimensions_b[],
     int i, j, k;
     struct timeval startTime, endTime;
 
-
     if(matrix_dimensions_a[1] != matrix_dimensions_b[0]){
         printf("Matrices are incompatible shapes to multiply\n");
         printf("Matrix A has %d columns\n", matrix_dimensions_a[1]);
@@ -102,15 +101,25 @@ void create_matrix_array(FILE *f, int * dimensions, double *matrix_out){
 
 }
 
+//void random_square_matrix(int n, double *matrix_out){
+//    int myseed;
+//    int entropySource;
+//    read(entropySource, &myseed , sizeof(rand));
+//    for(int i = 0; i < n; i++){
+//        for(int j = 0; j < n; j++){
+//            matrix_out[coord_to_index(i, j, n)] = rand_r(&myseed);
+//        }
+//    }
+//}
+
 void random_square_matrix(int n, double *matrix_out){
     int myseed;
     int entropySource;
     read(entropySource, &myseed , sizeof(rand));
-    for(int i = 0; i < n; i++){
-        for(int j = 0; j < n; j++){
-            matrix_out[coord_to_index(i, j, n)] = rand_r(&myseed);
-        }
+    for(int i = 0; i < n * n; i++){
+        matrix_out[i] = rand_r(&myseed)%42;
     }
+
 }
 
 int write_matrix_to_file(FILE *f, int dimensions[], double matrix_out[]){

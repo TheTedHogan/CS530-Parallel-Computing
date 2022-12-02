@@ -64,3 +64,5 @@ cmake-build-debug/
 
 # Log Files
 *.log
+
+out/

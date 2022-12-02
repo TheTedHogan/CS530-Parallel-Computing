@@ -31,7 +31,6 @@ add_executable(montecarlo src/MonteCarlo/monte_carlo.c)
 target_link_libraries(montecarlo m)
 add_executable(montecarlo_test src/MonteCarlo/monte_carlo_test.c)
 
-add_executable(matrixmatrixcannon src/MatrixMatrixCannon/matrixmatrix.c include/mmio.h libs/mmio.c src/MatrixMatrixCannon/matrixoperations.c src/MatrixMatrixCannon/matrixoperations.h)
-add_executable(matrixmatrixcannon_test src/MatrixMatrixCannon/matrixmatrix_test.c include/mmio.h libs/mmio.c src/MatrixMatrixCannon/matrixoperations.h src/MatrixMatrixCannon/matrixoperations.c)
+add_executable(matrixmatrixcannon src/MatrixMatrixCannon/matrixmatrixcannon.c include/mmio.h libs/mmio.c src/MatrixMatrixCannon/matrixoperations.c src/MatrixMatrixCannon/matrixoperations.h)
 target_link_libraries(matrixmatrixcannon ${MPI_C_LIBRARIES})
-target_link_libraries(matrixmatrixcannon_test ${MPI_C_LIBRARIES})
+
