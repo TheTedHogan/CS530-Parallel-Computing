@@ -10,6 +10,19 @@
 
 ## Build and Run Instructions
 
+The easiest way to run the programs is to use the slurm scripts that can be found in the scripts folder. There is one
+script that corresponds to each of the programs. These can then be adjusted and used with slurm. 
+Each of these scripts assume that they are passed to slurm from the root directory of the project. 
+
+For example to run the 
+matrixmatrix multiplication using cannon's algorithm, run the following command from the main project directory.
+
+`sbatch scripts/run_cannon.sh`
+
+The output will then be placed in the output directory with a file corresponding to each of the programs. In this example
+there will be a new output file called cannon_output.o.
+
+### Manual Instructions
 This project is currently set to be built using cmake.
 
 To build the project, first create a build directory, on *nix
@@ -31,7 +44,7 @@ Next, run make from inside the build directory
 This will output an executable file with a name corresponding to the function into the build directory that can then be run
 from the command line, for example
 
-`./fibonacci 10 s`
+`mpirun ./fibonacci 10 s`
 
 ### Running Fibonacci
 There are two fibonacci programs. The first is a serial program that implements a recursive algorithm to calculate the sequence
