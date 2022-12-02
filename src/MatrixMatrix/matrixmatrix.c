@@ -104,11 +104,13 @@ int main(int argc, char *argv[]) {
         {
             rows = (dest <= extra) ? averow+1 : averow;   	
             printf("Sending %d rows to task %d offset=%d\n",rows,dest,offset);
-            MPI_Send(&offset, 1, MPI_INT, dest, mtype, MPI_COMM_WORLD);
-            MPI_Send(&rows, 1, MPI_INT, dest, mtype, MPI_COMM_WORLD);
+            MPI_Send(&matrix_dimensions_a, 3, MPI_INT, dest, 0, MPI_COMM_WORLD);
+            MPI_Send(&matrix_dimensions_b, 3, MPI_INT, dest, 1, MPI_COMM_WORLD);
+            MPI_Send(&offset, 1, MPI_INT, dest, 2, MPI_COMM_WORLD);
+            MPI_Send(&rows, 1, MPI_INT, dest, 3, MPI_COMM_WORLD);
             MPI_Send(&matrix_a[offset+0], rows*matrix_dimensions_a[1], MPI_DOUBLE, dest, mtype,
                     MPI_COMM_WORLD);
-            MPI_Send(&matrix_b, matrix_dimensions_a[1]*matrix_dimensions_b[1], MPI_DOUBLE, dest, mtype, MPI_COMM_WORLD);
+            MPI_Send(matrix_b, matrix_dimensions_b[0] * matrix_dimensions_b[1], MPI_DOUBLE, dest, 4, MPI_COMM_WORLD);
             offset = offset + rows;
         }
 
@@ -120,17 +122,17 @@ int main(int argc, char *argv[]) {
             source = i;
             MPI_Recv(&offset, 1, MPI_INT, source, mtype, MPI_COMM_WORLD, &status);
             MPI_Recv(&rows, 1, MPI_INT, source, mtype, MPI_COMM_WORLD, &status);
-            MPI_Recv(&output_matrix[offset+0], rows*matrix_dimensions_b[1], MPI_DOUBLE, source, mtype, 
+            MPI_Recv(&output_matrix[offset+0], rows*matrix_dimensions_b[1], MPI_DOUBLE, source, mtype,
                     MPI_COMM_WORLD, &status);
             printf("Received results from task %d\n",source);
         } 
 
-        // for(int i=0; i < matrix_dimensions_a[0]; i ++){
-        //     for (int j = 0; j < matrix_dimensions_b[1]; j++){
-        //         printf("%g\t", output_matrix[coord_to_index(i, j, matrix_dimensions_b[1])]);
-        //     }
-        //     printf("\n");
-        // }
+         for(int i=0; i < matrix_dimensions_a[0]; i ++){
+             for (int j = 0; j < matrix_dimensions_b[1]; j++){
+                 printf("%g\t", output_matrix[coord_to_index(i, j, matrix_dimensions_b[1])]);
+             }
+             printf("\n");
+         }
 
         int output_dimensions[3] = {matrix_dimensions_a[0], matrix_dimensions_b[1], matrix_dimensions_a[0] * matrix_dimensions_b[1] };
 
@@ -151,10 +153,16 @@ int main(int argc, char *argv[]) {
     if(taskid > COORDINATOR){
         mtype = FROM_COORDINATOR;
         //printf("Worker %d is trying to receive. \n", taskid);
-        MPI_Recv(&offset, 1, MPI_INT, COORDINATOR, mtype, MPI_COMM_WORLD, &status);
-        MPI_Recv(&rows, 1, MPI_INT, COORDINATOR, mtype, MPI_COMM_WORLD, &status);
-        MPI_Recv(&matrix_a, rows*matrix_dimensions_a[1], MPI_DOUBLE, COORDINATOR, mtype, MPI_COMM_WORLD, &status);
-        MPI_Recv(&matrix_b, matrix_dimensions_a[1]*matrix_dimensions_b[1], MPI_DOUBLE, COORDINATOR, mtype, MPI_COMM_WORLD, &status);
+        MPI_Recv(&matrix_dimensions_a, 3, MPI_INT, COORDINATOR, 0, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        matrix_a = (double *) calloc(matrix_dimensions_a[0] * matrix_dimensions_a[1], sizeof(double));
+        MPI_Recv(&matrix_dimensions_b, 3, MPI_INT, COORDINATOR, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
+        matrix_b = (double *) calloc(matrix_dimensions_b[0] * matrix_dimensions_b[1], sizeof(double));
+        output_matrix = (double *) calloc(matrix_dimensions_a[0] * matrix_dimensions_b[1], sizeof(double));
+        MPI_Recv(&offset, 1, MPI_INT, COORDINATOR, 2, MPI_COMM_WORLD, &status);
+        MPI_Recv(&rows, 1, MPI_INT, COORDINATOR, 3, MPI_COMM_WORLD, &status);
+        MPI_Recv(matrix_a, rows*matrix_dimensions_a[1], MPI_DOUBLE, COORDINATOR, mtype, MPI_COMM_WORLD, &status);
+
+        MPI_Recv(matrix_b, matrix_dimensions_b[0] * matrix_dimensions_b[1], MPI_DOUBLE, COORDINATOR, 4, MPI_COMM_WORLD, &status);
         printf("Worker %d has received data.\n",taskid);
         
         matrix_matrix_multiply(matrix_dimensions_a, matrix_dimensions_b, matrix_a, matrix_b, output_matrix);
