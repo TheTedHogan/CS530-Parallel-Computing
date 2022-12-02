@@ -92,3 +92,14 @@ int write_matrix_to_file(FILE *f, int dimensions[], double matrix_out[]){
         }
     }
 }
+
+void random_square_matrix(int n, double *matrix_out){
+    int myseed;
+    int entropySource;
+    read(entropySource, &myseed , sizeof(rand));
+    for(int i = 0; i < n; i++){
+        for(int j = 0; j < n; j++){
+            matrix_out[coord_to_index(i, j, n)] = rand_r(&myseed);
+        }
+    }
+}
