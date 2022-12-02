@@ -8,6 +8,8 @@
 
 int main(int argc, char *argv[]) {
     MPI_Status *mpi_status;
+    FILE *output_file;
+    int output_dimensions[3];
     int num_procs;
     int proc_id;
     int n;
@@ -197,7 +199,18 @@ int main(int argc, char *argv[]) {
 //        }
 //
 //        printf("\n");
+        output_dimensions[0] = block_dim;
+        output_dimensions[1] = block_dim;
+        output_dimensions[2] = block_dim * block_dim;
+        printf("filename %s\n",argv[2]);
+        if ((output_file = fopen(argv[2], "w")) == NULL) {
+            printf("Failed to open output matrix file\n");
+            MPI_Abort(MPI_COMM_WORLD, 1);
+            exit(1);
+        }
 
+        write_matrix_to_file(output_file, output_dimensions, output_matrix);
+        fclose(output_file);
 
     }
 
