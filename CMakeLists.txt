@@ -34,3 +34,4 @@ add_executable(montecarlo_test src/MonteCarlo/monte_carlo_test.c)
 add_executable(matrixmatrixcannon src/MatrixMatrixCannon/matrixmatrixcannon.c include/mmio.h libs/mmio.c src/MatrixMatrixCannon/matrixoperations.c src/MatrixMatrixCannon/matrixoperations.h)
 target_link_libraries(matrixmatrixcannon ${MPI_C_LIBRARIES})
 
+add_executable(mandelbrot_serial src/Mandelbrot/mandelbrot_serial.c)
