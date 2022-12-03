@@ -8,10 +8,11 @@
     * On mac, this can be installed with `brew install cmake`
   * make
 
-## Build and Run Instructions
+# Build and Run Instructions
 
-### Mandelbrot
+## Mandelbrot
 
+### CUDA
 To run Mandelbrot on a GPU, there is a slurm script in the scripts directory (run_mandelbrot_cuda.sh), but there can be some problems with the queues. 
 
 The easiest way is to use a GPU enabled sessions, and follow the following commands in order from the home directory to build the project 
@@ -29,9 +30,16 @@ The easiest way is to use a GPU enabled sessions, and follow the following comma
  make
 
 ```
-
-The program can then be run from the build directory with the command 
+The program can then be run from the build directory with the command
 ` ./mandelbrot_cuda (outfile)`
+
+To run the OpenMPI implementation of Mandelbrot, follow the directions above to build the project. The resulting file can 
+then be called with 
+
+`OMP_NUM_THREADS=(Desired Number of Threads) ./mandelbrot_openmp (outfile)`
+
+You can specify the number of threads you want to run the Mandelbrot on with the OMP_NUM_THREADS environment variable. 
+
 
 ### Other Programs
 The easiest way to run the programs is to use the slurm scripts that can be found in the scripts folder. There is one

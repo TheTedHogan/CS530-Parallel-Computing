@@ -36,3 +36,4 @@ target_link_libraries(matrixmatrixcannon ${MPI_C_LIBRARIES})
 
 add_executable(mandelbrot_serial src/Mandelbrot/mandelbrot_serial.c)
 add_executable(mandelbrot_cuda src/Mandelbrot/mandelbrot_cuda.cu)
+add_executable(mandelbrot_openmp src/Mandelbrot/mandelbrot_openmp.c)

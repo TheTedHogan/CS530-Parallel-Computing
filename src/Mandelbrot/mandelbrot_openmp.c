@@ -13,21 +13,15 @@
 #include <stdlib.h>
 #include <math.h>
 #include <stdint.h>
-#include <cuda.h>
+#include <omp.h>
 #include <time.h>
-__global__ void kernal(int *device_results, int total_pixels, int xres, double xmin, double ymax, double dx, double dy, int maxiter){
-    int threadId = blockDim.x * blockIdx.x + threadIdx.x;
 
-    if(threadId >= total_pixels){
-        return;
-    }
+void kernal(int *results, int i, int j, int total_pixels, int xres, double xmin, double ymax, double dx, double dy, int maxiter){
 
     double x, y; /* Coordinates of the current point in the complex plane. */
     //double u, v; /* Coordinates of the iterated point. */
     /* Pixel counters */
 
-    int i = threadId % xres;
-    int j =  threadId / xres;
     int k; /* Iteration counter */
     y = ymax - j * dy;
     double u = 0.0;
@@ -43,7 +37,7 @@ __global__ void kernal(int *device_results, int total_pixels, int xres, double x
         u2 = u * u;
         v2 = v * v;
     };
-    device_results[threadId] = k;
+    results[j*xres+i] = k;
 }
 
 
@@ -51,14 +45,7 @@ int main(int argc, char* argv[])
 {
     //start timing here
     time_t start = time(NULL);
-    //Check status
-    cudaError_t cudaStatus;
-    cudaStatus = cudaSetDevice(0);
-    if (cudaStatus != cudaSuccess) {
-        fprintf(stderr, "cudaSetDevice failed!  Do you have a CUDA-capable GPU installed?");
-    }
-    int *results_host;
-    int *results_device;
+    int *results;
     /* Parse the command line arguments. */
     if (argc != 2) {
         printf("Usage:   %s <out.ppm>\n", argv[0]);
@@ -97,17 +84,25 @@ int main(int argc, char* argv[])
         pixelsPerBlock += 1;
     }
 
-    dim3 dimGrid(gridCount, 1, 1);
-    dim3 dimBlock(blockSize,1, 1);
 
-    int results_bytes = sizeof(int)*pixels;
-    results_host = (int*)malloc(results_bytes);
-    cudaMalloc(&results_device, results_bytes);
 
-    kernal<<<dimGrid,dimBlock>>>(results_device, pixels, xres, xmin, ymax, dx, dy, maxiter);
-    cudaDeviceSynchronize();
 
-    cudaMemcpy(results_host, results_device, results_bytes, cudaMemcpyDeviceToHost);
+    results = (int*)malloc(sizeof(int)*pixels);
+
+    int i,j; /* Pixel counters */
+    #pragma omp parallel
+    {
+        #pragma omp single
+        {
+        for (j = 0; j < yres; j++) {
+            for (i = 0; i < xres; i++) {
+                #pragma omp task shared(results, i, j, pixels, xres, xmin, ymax, dx, dy, maxiter)
+                kernal(results, i, j, pixels, xres, xmin, ymax, dx, dy, maxiter);
+                }
+                #pragma omp taskwait
+            }
+        }
+    }
 
 
     /* The output file name */
@@ -124,7 +119,7 @@ int main(int argc, char* argv[])
 
     /* compute  pixel color and write it to file */
     for(int z = 0; z < pixels; z++){
-        int k = results_host[z];
+        int k = results[z];
         if (k >= maxiter) {
             /* interior */
             const unsigned char black[] = {0, 0, 0, 0, 0, 0};
@@ -149,7 +144,7 @@ int main(int argc, char* argv[])
     //End timing here
     time_t end = time(NULL);
 
-    printf("The cuda implementation took %0.2f seconds\n", difftime(end, start));
+    printf("The OpenMP implementation took %0.2f seconds\n", difftime(end, start));
     fclose(fp);
     return 0;
 }

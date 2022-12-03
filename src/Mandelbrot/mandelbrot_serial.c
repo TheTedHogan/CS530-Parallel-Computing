@@ -95,6 +95,6 @@ int main(int argc, char* argv[])
     }
     fclose(fp);
     time_t end = time(NULL);
-    printf("The serial time took %0.2f seconds", difftime(end, start));
+    printf("The serial time took %0.2f seconds\n", difftime(end, start));
     return 0;
 }
