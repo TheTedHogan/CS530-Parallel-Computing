@@ -36,6 +36,7 @@ The program can then be run from the build directory with the command
 To run the OpenMPI implementation of Mandelbrot, follow the directions above to build the project. The resulting file can 
 then be called with 
 
+### OpenMP
 `OMP_NUM_THREADS=(Desired Number of Threads) ./mandelbrot_openmp (outfile)`
 
 You can specify the number of threads you want to run the Mandelbrot on with the OMP_NUM_THREADS environment variable. 
