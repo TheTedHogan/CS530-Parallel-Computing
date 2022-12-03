@@ -27,7 +27,7 @@ __global__ void kernal(int *device_results, int total_pixels, int xres, int xmin
     /* Pixel counters */
 
     int i = threadId % xres;
-    int j = blockIdx.x;
+    int j = threadId / xres;
     int k; /* Iteration counter */
     y = ymax - j * dy;
     double u = 0.0;
