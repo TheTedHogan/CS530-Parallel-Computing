@@ -10,9 +10,34 @@
 
 ## Build and Run Instructions
 
+### Mandelbrot
+
+To run Mandelbrot on a GPU, there is a slurm script in the scripts directory (run_mandelbrot_cuda.sh), but there can be some problems with the queues. 
+
+The easiest way is to use a GPU enabled sessions, and follow the following commands in order from the home directory to build the project 
+
+``` 
+ 
+ module load cmake/gcc/3.18.0
+ module load openmpi/gcc/64/1.10.7
+ module load nvidia_hpcsdk
+ module load gcc/9.2.0
+ 
+ mkdir build
+ cd build
+ cmake ..
+ make
+
+```
+
+The program can then be run from the build directory with the command 
+` ./mandelbrot_cuda (outfile)`
+
+### Other Programs
 The easiest way to run the programs is to use the slurm scripts that can be found in the scripts folder. There is one
 script that corresponds to each of the programs. These can then be adjusted and used with slurm. 
 Each of these scripts assume that they are passed to slurm from the root directory of the project. 
+
 
 For example to run the 
 matrixmatrix multiplication using cannon's algorithm, run the following command from the main project directory.
