@@ -14,7 +14,7 @@
 #include <math.h>
 #include <stdint.h>
 #include <cuda.h>
-
+#include <time.h>
 __global__ void kernal(int *device_results, int total_pixels, int xres, double xmin, double ymax, double dx, double dy, int maxiter){
     int threadId = blockDim.x * blockIdx.x + threadIdx.x;
 
@@ -49,6 +49,8 @@ __global__ void kernal(int *device_results, int total_pixels, int xres, double x
 
 int main(int argc, char* argv[])
 {
+    //start timing here
+    time_t start = time(NULL);
     //Check status
     cudaError_t cudaStatus;
     cudaStatus = cudaSetDevice(0);
@@ -144,7 +146,10 @@ int main(int argc, char* argv[])
 
 
 
+    //End timing here
+    time_t end = time(NULL);
 
+    printf("The cuda implementation took %0.2f seconds", difftime(end, start));
     fclose(fp);
     return 0;
 }

@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <math.h>
 #include <stdint.h>
+#include <time.h>
 
 int main(int argc, char* argv[])
 {
@@ -56,6 +57,8 @@ int main(int argc, char* argv[])
 //double u, v; /* Coordinates of the iterated point. */
     int i,j; /* Pixel counters */
     int k; /* Iteration counter */
+    // Start timing here 
+    time_t start = time(NULL);
     for (j = 0; j < yres; j++) {
         y = ymax - j * dy;
         for(i = 0; i < xres; i++) {
@@ -91,5 +94,7 @@ int main(int argc, char* argv[])
         }
     }
     fclose(fp);
+    time_t end = time(NULL);
+    printf("The serial time took %0.2f seconds", difftime(end, start));
     return 0;
 }
