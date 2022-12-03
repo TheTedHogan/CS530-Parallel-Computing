@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.15)
-project(CS530_Parallel_Computing C)
+project(CS530_Parallel_Computing C CUDA)
 
 find_package(MPI REQUIRED)
 add_definitions(-DOMPI_SKIP_MPICXX)
@@ -34,3 +34,5 @@ add_executable(montecarlo_test src/MonteCarlo/monte_carlo_test.c)
 add_executable(matrixmatrixcannon src/MatrixMatrixCannon/matrixmatrixcannon.c include/mmio.h libs/mmio.c src/MatrixMatrixCannon/matrixoperations.c src/MatrixMatrixCannon/matrixoperations.h)
 target_link_libraries(matrixmatrixcannon ${MPI_C_LIBRARIES})
 
+add_executable(mandelbrot_serial src/Mandelbrot/mandelbrot_serial.c)
+add_executable(mandelbrot_cuda src/Mandelbrot/mandelbrot_cuda.cu)
