@@ -15,7 +15,7 @@
 #include <stdint.h>
 #include <cuda.h>
 
-__global__ void kernal(int *device_results, int total_pixels, int xres, int xmin, int ymax, int dx, int dy, int maxiter){
+__global__ void kernal(int *device_results, int total_pixels, int xres, int xmin, int ymax, double dx, double dy, int maxiter){
     int threadId = blockDim.x * blockIdx.x + threadIdx.x;
 
     if(threadId >= total_pixels){
