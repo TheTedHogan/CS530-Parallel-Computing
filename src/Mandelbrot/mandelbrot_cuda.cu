@@ -15,19 +15,19 @@
 #include <stdint.h>
 #include <cuda.h>
 
-__global__ void kernal(int *device_results, int total_pixels, int xres, int xmin, int ymax, int dx, int dy, int maxiter){
+__global__ void kernal(int *device_results, int total_pixels, int xres, double xmin, double ymax, double dx, double dy, int maxiter){
     int threadId = blockDim.x * blockIdx.x + threadIdx.x;
 
     if(threadId >= total_pixels){
         return;
     }
-    //printf("x\t%d\ty\t%d\n", blockIdx.x, threadId % yres);
+
     double x, y; /* Coordinates of the current point in the complex plane. */
     //double u, v; /* Coordinates of the iterated point. */
     /* Pixel counters */
 
     int i = threadId % xres;
-    int j = blockIdx.x;
+    int j =  threadId / xres;
     int k; /* Iteration counter */
     y = ymax - j * dy;
     double u = 0.0;
@@ -35,19 +35,15 @@ __global__ void kernal(int *device_results, int total_pixels, int xres, int xmin
     double u2 = u * u;
     double v2 = v*v;
     x = xmin + i * dx;
+
     /* iterate the point */
-    //printf("threadid\t%d\ti:\t%d\tj:\t%d\n", threadId, i, j);
     for (k = 1; k < maxiter && (u2 + v2 < 4.0); k++) {
         v = 2 * u * v + y;
         u = u2 - v2 + x;
         u2 = u * u;
         v2 = v * v;
     };
-    printf("%d", k);
     device_results[threadId] = k;
-
-
-
 }
 
 
@@ -78,8 +74,8 @@ int main(int argc, char* argv[])
     const uint16_t maxiter = 1000;
 
     /* Image size, width is given, height is computed. */
-    const int xres = 32;
-    const int yres = 32;
+    const int xres = 1000;
+    const int yres = 1000;
     const int pixels = xres * yres;
 
     /* Precompute pixel width and height. */
