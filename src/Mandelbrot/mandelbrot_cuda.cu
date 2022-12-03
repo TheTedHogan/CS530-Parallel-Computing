@@ -39,9 +39,9 @@ __global__ void kernal(int *device_results, int total_pixels, int xres, int xmin
     //printf("threadid\t%d\ti:\t%d\tj:\t%d\n", threadId, i, j);
     for (k = 1; k < maxiter && (u2 + v2 < 4.0); k++) {
         v = 2 * u * v + y;
-        printf("v value: %0.2f", v);
+        printf("v value: %0.2f\n", v);
         u = u2 - v2 + x;
-        printf("u value: %0.2f", u);
+        printf("u value: %0.2f\n", u);
         u2 = u * u;
         v2 = v * v;
     };
