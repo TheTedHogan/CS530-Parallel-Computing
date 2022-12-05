@@ -19,22 +19,18 @@ int main(int argc, char *argv[]) {
     double *matrix_a;
     double *matrix_b;
     double *output_matrix;
-    double *final_output_matrix;
-    double *work_matrix_a;
-    double *work_matrix_b;
-
 
     int numtasks;
     int taskid;               
-	int numworkers;     
-    int averows;
-    int extra; 
-    int rc;  
-    int gathercount;
-
-    int sendcount[numworkers];    
-    int displ[numworkers];
-
+	int numworkers;            
+	int source;                
+	int dest;                
+	int mtype; 
+    int averow;
+    int extra;
+    int offset;
+    int rows;
+    int rc;
 
     MPI_Status status;
 
@@ -42,15 +38,17 @@ int main(int argc, char *argv[]) {
     MPI_Comm_rank(MPI_COMM_WORLD,&taskid);
     MPI_Comm_size(MPI_COMM_WORLD,&numtasks);
 
-    if (numtasks < 2){
-        printf("There needs to be more than 1 task. \n");
-        MPI_Abort(MPI_COMM_WORLD, rc);
-        exit(1);
-    }
 
     numworkers = numtasks-1;
 
     if(taskid == COORDINATOR){
+
+        if (numtasks < 2){
+            printf("There needs to be more than 1 task. \n");
+            MPI_Abort(MPI_COMM_WORLD, rc);
+            exit(1);
+        }
+
         if(argc != 4){
             printf("Usage is: matrixmatrix matrix_a_file matrix_b_file output_file");
             MPI_Abort(MPI_COMM_WORLD, rc);
@@ -90,97 +88,130 @@ int main(int argc, char *argv[]) {
         //Populate the matrix_a
         create_matrix_array(input_matrix_file_b, matrix_dimensions_b, matrix_b);
 
-        
         fclose(input_matrix_file_b);
 
         output_matrix = calloc(matrix_dimensions_a[0] * matrix_dimensions_b[1], sizeof(double));
-        final_output_matrix = calloc(matrix_dimensions_a[0] * matrix_dimensions_b[1], sizeof(double));
 
-        averows = (matrix_dimensions_a[1]*matrix_dimensions_a[0])/numworkers;
-        extra = (matrix_dimensions_a[1]*matrix_dimensions_a[0])%numworkers;
+        averow = matrix_dimensions_a[0]/numworkers;
+        extra = matrix_dimensions_a[0]%numworkers;
+        offset = 0;
+        mtype = FROM_COORDINATOR;
 
-        displ[0] = 0;
-        for(int i = 0; i < numworkers; i++){
-            sendcount[i] = averows;
-            //printf("sendcount[%d] = %d\n",i,sendcount[i]);
+        //printf("worker %d dims %d %d %d \n",taskid, matrix_dimensions_a[0],matrix_dimensions_a[1],matrix_dimensions_a[2]);
+        //printf("worker %d dims %d %d %d \n",taskid, matrix_dimensions_b[0],matrix_dimensions_b[1],matrix_dimensions_b[2]);
+        for (dest=1; dest<=numworkers; dest++)
+        {
+            rows = (dest <= extra) ? averow+1 : averow;   	
+            //printf("Sending %d rows to task %d offset=%d\n",rows,dest,offset);
+        
+            MPI_Send(&offset, 1, MPI_INT, dest, mtype, MPI_COMM_WORLD);
+            MPI_Send(&rows, 1, MPI_INT, dest, mtype, MPI_COMM_WORLD);
+
+            MPI_Send(&matrix_dimensions_a, 3, MPI_INT, dest, 0, MPI_COMM_WORLD);
+            MPI_Send(&matrix_dimensions_b, 3, MPI_INT, dest, 1, MPI_COMM_WORLD);
+            
+            MPI_Send(&matrix_a[coord_to_index(offset, 0, matrix_dimensions_a[1])], ((rows)*(matrix_dimensions_a[1])), MPI_DOUBLE, dest, mtype,
+                    MPI_COMM_WORLD);
+            //printf("size matrix a = %lf and size of rows*matrix_dimensions_a[1] is %d\n",matrix_a[coord_to_index(offset, rows, matrix_dimensions_a[1])],rows*matrix_dimensions_a[1]);
+            MPI_Send(matrix_b, ((matrix_dimensions_b[0])*(matrix_dimensions_b[1])), MPI_DOUBLE, dest, mtype, MPI_COMM_WORLD);
+            //printf("made it through matrix b\n");
+            offset = offset + rows;
         }
-        for (int i = 1; i < numworkers; i++){
-            displ[i] = displ[i-1] + sendcount[i-1];
-            //printf("displ[%d] = %d\n",i,displ[i]);
-        }
-        sendcount[numworkers-1] += extra;
-        //printf("sendcount[numworkers-1] = %d\n",sendcount[numworkers-1]);
-        displ[numworkers-2] += sendcount[numworkers-1];
-        //printf("displ[numworkers-1] = %d\n",displ[numworkers-1]);
+
+        /* Receive results from worker tasks */
+        mtype = FROM_WORKER;
+        for (int i=1; i<=numworkers; i++)
+        {
+            //printf("coordinator is waiting. \n");
+            source = i;
+            MPI_Recv(&offset, 1, MPI_INT, source, mtype, MPI_COMM_WORLD, &status);
+            MPI_Recv(&rows, 1, MPI_INT, source, mtype, MPI_COMM_WORLD, &status);
+            MPI_Recv(&output_matrix[coord_to_index(offset, 0, matrix_dimensions_b[1])], (double)(rows*matrix_dimensions_b[1]), MPI_DOUBLE, source, mtype, 
+                    MPI_COMM_WORLD, &status);
+            //printf("Received results from task %d\n",source);
+        } 
 
         // for(int i=0; i < matrix_dimensions_a[0]; i ++){
-        //     for (int j = 0; j < matrix_dimensions_a[1]; j++){
-        //         printf("%g\t", matrix_a[coord_to_index(i, j, matrix_dimensions_a[1])]);
-        //     }
-        //     printf("\n");
-        // }
-        // for(int i=0; i < matrix_dimensions_b[0]; i ++){
         //     for (int j = 0; j < matrix_dimensions_b[1]; j++){
-        //         printf("%g\t", matrix_b[coord_to_index(i, j, matrix_dimensions_b[1])]);
+        //         printf("%g\t", output_matrix[coord_to_index(i, j, matrix_dimensions_b[1])]);
         //     }
         //     printf("\n");
         // }
 
-    }
-    averows = (matrix_dimensions_a[1]*matrix_dimensions_a[0])/numworkers;
-    extra = (matrix_dimensions_a[1]*matrix_dimensions_a[0])%numworkers;
+        int output_dimensions[3] = {matrix_dimensions_a[0], matrix_dimensions_b[1], matrix_dimensions_a[0] * matrix_dimensions_b[1] };
 
-    double work_matrix_a[averows+extra];
-    double work_matrix_b[averows+extra];
-    //double work_output_matrix[averows+extra];
-
-    MPI_Scatterv(&matrix_a, sendcount, displ, MPI_INT, &work_matrix_a, averows+extra, MPI_DOUBLE, COORDINATOR, MPI_COMM_WORLD); 
-    //printf("worker %d receieved matrix_a\n", taskid);
-    MPI_Scatterv(&matrix_b, sendcount, displ, MPI_INT, &work_matrix_b, averows+extra, MPI_DOUBLE, COORDINATOR, MPI_COMM_WORLD); 
-
-    //MPI_Barrier(MPI_COMM_WORLD);
-
-    MPI_Bcast(matrix_dimensions_a, 3, MPI_INT, COORDINATOR, MPI_COMM_WORLD);
-    MPI_Bcast(matrix_dimensions_b, 3, MPI_INT, COORDINATOR, MPI_COMM_WORLD);
-
-    //MPI_Bcast(&matrix_b, matrix_dimensions_b[0]*matrix_dimensions_b[1], MPI_DOUBLE, COORDINATOR, MPI_COMM_WORLD);
-    //printf("worker %d receieved matrix_b\n", taskid);
-    //MPI_Bcast(&output_matrix, matrix_dimensions_a[0]*matrix_dimensions_b[1], MPI_DOUBLE, COORDINATOR, MPI_COMM_WORLD);
-    //printf("worker %d receieved output_matrix\n", taskid);   
-
-    if(taskid > COORDINATOR){
-        //printf("worker %d\n",taskid);
-        for(int i = 0; i<(matrix_dimensions_a[1]*matrix_dimensions_a[0]); i++){
-            printf("work_matrix_a[%d] = %d\n", i, work_matrix_a[i]);
-        }
-        for(int i = 0; i<(matrix_dimensions_a[1]*matrix_dimensions_a[0]); i++){
-            //printf("work_matrix_b[%d] = %d\n", i, work_matrix_b[i]);
-        }
-        matrix_matrix_multiply(matrix_dimensions_a, matrix_dimensions_b, work_matrix_a, work_matrix_b, output_matrix);
-
-        for(int i = 0; i<(matrix_dimensions_a[1]*matrix_dimensions_a[0]); i++){
-            //printf("work_output_matrix[%d] = %lf\n", i, work_output_matrix[i]);
-        }
-    }
-
-    gathercount = (matrix_dimensions_a[0]*matrix_dimensions_b[1])/numtasks;
-    MPI_Gatherv(output_matrix, gathercount, MPI_DOUBLE, final_output_matrix, sendcount, displ, MPI_DOUBLE, COORDINATOR, MPI_COMM_WORLD);
-
-    //MPI_Barrier(MPI_COMM_WORLD);
-
-    if (taskid == COORDINATOR){
         //Open file to write out
         if ((output_file = fopen(argv[3], "w")) == NULL) {
             printf("Failed to open output matrix file\n");
             MPI_Abort(MPI_COMM_WORLD, rc);
             exit(1);
         }
-        int output_dimensions[3] = {matrix_dimensions_a[0], matrix_dimensions_b[1], matrix_dimensions_a[0] * matrix_dimensions_b[1] };
+
         write_matrix_to_file(output_file, output_dimensions, output_matrix);
         fclose(output_file);
         //Release memory
         free(matrix_a);
         free(matrix_b);
+    }
+
+    if(taskid > COORDINATOR){
+        mtype = FROM_COORDINATOR;
+        // double matrix_b[matrix_dimensions_b[0] * matrix_dimensions_b[1] * sizeof(double)];
+        // double output_matrix[matrix_dimensions_a[0] * matrix_dimensions_b[1] * sizeof(double)];
+        // double matrix_a[matrix_dimensions_a[0] * matrix_dimensions_a[1] * sizeof(double)]; 
+
+        //printf("Worker %d is trying to receive. \n", taskid);
+        MPI_Recv(&offset, 1, MPI_INT, COORDINATOR, mtype, MPI_COMM_WORLD, &status);
+        MPI_Recv(&rows, 1, MPI_INT, COORDINATOR, mtype, MPI_COMM_WORLD, &status);
+
+        //printf("Worker %d is trying to receive rows.... rows = %d \n", taskid,rows);
+        
+        MPI_Recv(&matrix_dimensions_a, 3, MPI_INT, COORDINATOR, 0, MPI_COMM_WORLD, &status);
+        MPI_Recv(&matrix_dimensions_b, 3, MPI_INT, COORDINATOR, 1, MPI_COMM_WORLD, &status);
+        //printf("Worker %d has received matix dimensions. [%d] = %d  [%d] = %d\n", taskid,0,matrix_dimensions_a[0],1,matrix_dimensions_a[1]);
+        
+        double* matrix_b;
+        matrix_b = calloc(matrix_dimensions_b[0] * matrix_dimensions_b[1], sizeof(double));
+        double* sub_matrix_a;
+        sub_matrix_a = calloc(rows * matrix_dimensions_a[1], sizeof(double));
+        double* sub_output_matrix;
+        sub_output_matrix = calloc(rows * matrix_dimensions_b[1], sizeof(double));
+
+
+        MPI_Recv(sub_matrix_a, ((rows)*(matrix_dimensions_a[1])), MPI_DOUBLE, COORDINATOR, mtype, MPI_COMM_WORLD, &status);
+        for(int i = 0; i<(rows)*(matrix_dimensions_a[1]); i++){
+            printf("Worker %d is trying to receive matrix a. matrix a = %lf \n", taskid,sub_matrix_a[i]);
+        }
+
+        //printf("worker %d received matrix a from 0. Message source = %d, ""tag = %d\n",taskid, status.MPI_SOURCE, status.MPI_TAG);
+
+        MPI_Recv(matrix_b, ((matrix_dimensions_b[0])*(matrix_dimensions_b[1])), MPI_DOUBLE, COORDINATOR, mtype, MPI_COMM_WORLD, &status);
+        //printf("Worker %d is trying to receive matrix b. \n", taskid);
+        //printf("Worker %d has received data.\n",taskid);
+
+        matrix_dimensions_a[0] = rows;
+
+        //printf("worker %d dims %d %d %d \n",taskid, matrix_dimensions_a[0],matrix_dimensions_a[1],matrix_dimensions_a[2]);
+        int sub_matrix_a_dim[3];
+        sub_matrix_a_dim[0] = rows;
+        sub_matrix_a_dim[1] = matrix_dimensions_a[1];
+        sub_matrix_a_dim[2] = matrix_dimensions_a[2];
+
+        matrix_matrix_multiply(sub_matrix_a_dim, matrix_dimensions_b, sub_matrix_a, matrix_b, sub_output_matrix);
+        
+        
+        //printf("Worker %d has this portion of the array\n", taskid);
+        // for(int i = 0; i<rows*matrix_dimensions_b[1]; i++){
+        //     printf("output %lf\n", output_matrix[i]);
+        // }
+        // for(int i = 0; i<rows*matrix_dimensions_b[1]; i++){
+        //     printf("matrix a %lf\n", matrix_a[i]);
+        // }
+        mtype = FROM_WORKER;
+        MPI_Send(&offset, 1, MPI_INT, COORDINATOR, mtype, MPI_COMM_WORLD);
+        MPI_Send(&rows, 1, MPI_INT, COORDINATOR, mtype, MPI_COMM_WORLD);
+        MPI_Send(sub_output_matrix, rows*matrix_dimensions_b[1], MPI_DOUBLE, COORDINATOR, mtype, MPI_COMM_WORLD);
+
     }
 
     MPI_Finalize();
