@@ -9,6 +9,8 @@
 int main(int argc, char *argv[]) {
     MPI_Status *mpi_status;
     FILE *output_file;
+    double start;
+    double end;
     int output_dimensions[3];
     int num_procs;
     int proc_id;
@@ -56,7 +58,8 @@ int main(int argc, char *argv[]) {
     submatrix_a = calloc(block_dim * block_dim, sizeof(double));
     submatrix_b = calloc(block_dim * block_dim, sizeof(double));
     submatrix_c = calloc(block_dim * block_dim, sizeof(double));
-
+    //start timing here
+    start = MPI_Wtime();
     //initialize the submatrix_c to 0 to prep it for collecting results
     for(int i = 0; i < block_dim * block_dim; i++){
         submatrix_c[i] = 0;
@@ -80,12 +83,13 @@ int main(int argc, char *argv[]) {
         output_matrix = (double *) calloc(n * n, sizeof(double));
         submatrix_send_a = calloc(n * n, sizeof(double));
         submatrix_send_b = calloc(n * n, sizeof(double));
-//        random_square_matrix(n, matrix_a);
-//        random_square_matrix(n, matrix_b);
+        random_square_matrix(n, matrix_a);
+        random_square_matrix(n, matrix_b);
+
+
+
         //initialize the output matrix to 0
         for(int i = 0; i < n*n; i++){
-            matrix_a[i] = i;
-            matrix_b[i] = i;
             output_matrix[i] = 0;
         }
 
@@ -191,18 +195,22 @@ int main(int argc, char *argv[]) {
             }
             free(dest_coord);
         }
+        //uncomment to print matrix
 //        for(int z = 0; z < n * n; z ++){
 //            if(z % n == 0){
 //                printf("\n");
 //            }
 //            printf("%g\t", output_matrix[z]);
 //        }
-//
-//        printf("\n");
-        output_dimensions[0] = block_dim;
-        output_dimensions[1] = block_dim;
-        output_dimensions[2] = block_dim * block_dim;
-        printf("filename %s\n",argv[2]);
+
+        //end timing here
+        end = MPI_Wtime();
+        printf("Elapsed Time\t%0.4f\n", end - start);
+        //printf("start:\t%g\tend:\t%g\n", start, end);
+        output_dimensions[0] = n;
+        output_dimensions[1] = n;
+        output_dimensions[2] = n * n;
+
         if ((output_file = fopen(argv[2], "w")) == NULL) {
             printf("Failed to open output matrix file\n");
             MPI_Abort(MPI_COMM_WORLD, 1);

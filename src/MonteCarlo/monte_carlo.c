@@ -67,7 +67,7 @@ int main(int argc, char * argv[]){
 
     if (rank == 0) {
       pi = 4*((double)sum/n);
-      printf("%2d\t%fsecs\t%0.6f\t", size, end - start, pi);
+        printf("Elapsed Time\t%0.5f\n", end - start);
     }
 
     MPI_Finalize();

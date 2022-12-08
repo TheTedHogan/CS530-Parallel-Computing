@@ -20,7 +20,8 @@ int main(int argc, char *argv[]) {
     double *matrix_a;
     double *matrix_b;
     double *output_matrix;
-
+    double start;
+    double end;
     int numtasks;
     int taskid;               
 	int numworkers;            
@@ -91,7 +92,7 @@ int main(int argc, char *argv[]) {
         fclose(input_matrix_file_b);
 
         //start timing here
-        time_t start = time(NULL);
+        start = MPI_Wtime();
         output_matrix = calloc(matrix_dimensions_a[0] * matrix_dimensions_b[1], sizeof(double));
 
         averow = matrix_dimensions_a[0]/numworkers;
@@ -131,8 +132,8 @@ int main(int argc, char *argv[]) {
         }
 
         //end timing here
-        time_t end = time(NULL);
-        printf("\tElapsed Time\t%0.2f\n", difftime(end, start));
+        end = MPI_Wtime();
+        printf("Elapsed Time\t%0.4f\n", end - start);
         int output_dimensions[3] = {matrix_dimensions_a[0], matrix_dimensions_b[1], matrix_dimensions_a[0] * matrix_dimensions_b[1] };
 
         //Open file to write out

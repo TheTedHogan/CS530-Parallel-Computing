@@ -1,7 +1,7 @@
 #include <stdio.h>
 #include <math.h>
 #include <stdlib.h>
-#include <mpi.h>
+#include "mpi.h"
 #include <time.h>
 
 void validInput(int input_1, float input_2){
@@ -63,7 +63,7 @@ int main(int argc, char * argv[]){
     //printf("The approximated value of pi is: %.6f\n", pi);
     if (rank == 0) {
       int realTotal = (total * 4) / 1000000;
-      printf("%2d\t%fsecs\t%0.6f", commSize,  endTime - startTime, realTotal);
+        printf("Elapsed Time\t%0.5f\n", endTime - startTime);
     }
 
     MPI_Finalize();

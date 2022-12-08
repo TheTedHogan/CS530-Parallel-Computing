@@ -11,6 +11,9 @@
 # Build and Run Instructions
 
 ## Mandelbrot
+Mandlebrot has its own cmake file in its directory and expects to create a build directory there. While not ideal, 
+this is because of incompatibilities of the GCC version needed to compile the CUDA application and the version needed by
+the other projects. 
 
 ### CUDA
 To run Mandelbrot on a GPU, there is a slurm script in the scripts directory (run_mandelbrot_cuda.sh), but there can be some problems with the queues. 
@@ -24,6 +27,7 @@ The easiest way is to use a GPU enabled sessions, and follow the following comma
  module load nvidia_hpcsdk
  module load gcc/9.2.0
  
+ cd src/Mandelbrot
  mkdir build
  cd build
  cmake ..
@@ -33,10 +37,10 @@ The easiest way is to use a GPU enabled sessions, and follow the following comma
 The program can then be run from the build directory with the command
 ` ./mandelbrot_cuda (outfile)`
 
-To run the OpenMPI implementation of Mandelbrot, follow the directions above to build the project. The resulting file can 
-then be called with 
-
 ### OpenMP
+To run the OpenMPI implementation of Mandelbrot, follow the directions above to build the project. The resulting file can
+then be called with
+
 `OMP_NUM_THREADS=(Desired Number of Threads) ./mandelbrot_openmp (outfile)`
 
 You can specify the number of threads you want to run the Mandelbrot on with the OMP_NUM_THREADS environment variable. 
@@ -78,7 +82,7 @@ Next, run make from inside the build directory
 This will output an executable file with a name corresponding to the function into the build directory that can then be run
 from the command line, for example
 
-`mpirun ./fibonacci 10 s`
+`mpirun -n 9 ./matrixmatrixcannon 12 ../out/cannonsout.mtx`
 
 ### Running Fibonacci
 There are two fibonacci programs. The first is a serial program that implements a recursive algorithm to calculate the sequence
@@ -96,13 +100,15 @@ It can be called with the following command:
 
 The leibniz program takes one required argument, the number of iterations, and will output the approximation of pi.
 
-`./src/Leibniz/script.sh`
+#### MPI
+`/scripts/run_leibniz`
 
 ### Running Monte Carlo
 
 The monte carlo program takes one required argument, the number of iterations, and will output the approximation of pi.
 
-`./src/MonteCarlo/script.sh`
+#### MPI
+`/scripts/run_monte_carlo`
 
 ### Running Matrix Vector Multiply
 The matrixvector multiply will compute the product of a matrix and vector that are supplied in mmio coordinate form. It will also output the results to an mmio file.

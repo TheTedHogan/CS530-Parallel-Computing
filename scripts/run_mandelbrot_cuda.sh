@@ -8,7 +8,7 @@
 #SBATCH --gres=gpu:1
 
 
-module load gcc/10.2.0
+module load gcc/9.2.0
 module load cmake/gcc/3.18.0
 module load openmpi/gcc/64/1.10.7
 module load nvidia_hpcsdk

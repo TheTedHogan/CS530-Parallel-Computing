@@ -96,7 +96,7 @@ int main(int argc, char* argv[])
         {
         for (j = 0; j < yres; j++) {
             for (i = 0; i < xres; i++) {
-                #pragma omp task shared(results, i, j, pixels, xres, xmin, ymax, dx, dy, maxiter)
+                #pragma omp task shared(results, i, j, dx, dy)
                 kernal(results, i, j, pixels, xres, xmin, ymax, dx, dy, maxiter);
                 }
                 #pragma omp taskwait
