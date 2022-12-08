@@ -96,13 +96,13 @@ It can be called with the following command:
 
 The leibniz program takes one required argument, the number of iterations, and will output the approximation of pi.
 
-`./leibniz 10`
+`./src/Leibniz/script.sh`
 
 ### Running Monte Carlo
 
 The monte carlo program takes one required argument, the number of iterations, and will output the approximation of pi.
 
-`./montecarlo 10`
+`./src/MonteCarlo/script.sh`
 
 ### Running Matrix Vector Multiply
 The matrixvector multiply will compute the product of a matrix and vector that are supplied in mmio coordinate form. It will also output the results to an mmio file.

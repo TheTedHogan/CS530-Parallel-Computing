@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <mmio.h>
 #include "matrixoperations.h"
+#include <time.h>
 
 int coord_to_index(int row_coord, int col_coord, int columns){
     return (row_coord * columns) + col_coord;
@@ -89,17 +90,6 @@ int write_matrix_to_file(FILE *f, int dimensions[], double matrix_out[]){
     for(int i=0; i < dimensions[0]; i ++){
         for (int j = 0; j < dimensions[1]; j++){
             fprintf(f, "%d %d %g\n", i+1, j+1, matrix_out[coord_to_index(i, j, dimensions[1])]);
-        }
-    }
-}
-
-void random_square_matrix(int n, double *matrix_out){
-    int myseed;
-    int entropySource;
-    read(entropySource, &myseed , sizeof(rand));
-    for(int i = 0; i < n; i++){
-        for(int j = 0; j < n; j++){
-            matrix_out[coord_to_index(i, j, n)] = rand_r(&myseed);
         }
     }
 }
